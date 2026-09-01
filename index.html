@@ -1727,7 +1727,7 @@
           </div>
           <div class="flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 flex-shrink-0">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>2026.09.01 (화) 실시간 헤드라인</span>
+            <span id="news-live-date-stamp">2026.09.01 (화) 실시간 헤드라인</span>
           </div>
         </div>
 
@@ -1735,7 +1735,7 @@
         <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center gap-3 text-xs">
           <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-[10px] tracking-wider flex-shrink-0">속보 BREAKING</span>
           <div class="overflow-hidden whitespace-nowrap text-slate-200 font-medium text-xs flex-1">
-            <span>🔥 [연준 9월 FOMC D-14] 잭슨홀 회의 이후 '금리 인상 vs 동결' 월가 격론 가열… 미 국채 30년물 5%대 장기화 속 TQQQ 무한매수 및 월배당 ETF 방어 수요 급증</span>
+            <span id="news-breaking-ticker-text">🔥 [글로벌 거시 & 연준] 9월 FOMC 앞두고 '금리 인상 vs 동결' 월가 격론 가열… 미 국채 30년물 5%대 장기화 속 TQQQ 무한매수 및 월배당 ETF 방어 수요 급증</span>
           </div>
         </div>
 
@@ -2548,9 +2548,16 @@
 
       document.getElementById('last-refresh-time').innerText = timeStr;
 
+      // Dynamic News Header Date Stamp
+      const days = ['일', '월', '화', '수', '목', '금', '토'];
+      const dayName = days[now.getDay()];
+      const dateDisplay = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} (${dayName}) 실시간 헤드라인`;
+      const dateStampEl = document.getElementById('news-live-date-stamp');
+      if (dateStampEl) dateStampEl.innerText = dateDisplay;
+
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');
-        showToast(`🟢 미국 주식(47점), 코인, 환율 실시간 갱신 완료! (${timeStr})`, 'success');
+        showToast(`🟢 미국 주식(47점), 코인, 환율, 뉴스 실시간 갱신 완료! (${timeStr})`, 'success');
       }, 600);
     }
 
