@@ -18,6 +18,7 @@ function toggleFngTab(tab) {
   const sourceText = document.getElementById('fng-source-text');
   const sourceLink = document.getElementById('fng-source-link');
   const needle = document.getElementById('fng-gauge-needle');
+  const aiOrderFng = document.getElementById('ai-order-fng-score');
 
   if (tab === 'stock') {
     if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl bg-sky-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
@@ -39,6 +40,7 @@ function toggleFngTab(tab) {
     if (sourceText) sourceText.innerText = '출처: CNN Business Stock';
     if (sourceLink) sourceLink.href = 'https://edition.cnn.com/markets/fear-and-greed';
     if (needle) needle.style.left = `${stockFngData.score}%`;
+    if (aiOrderFng) aiOrderFng.innerText = `${stockFngData.score}점 (주식 ${stockFngData.status.split(' ')[0]})`;
   } else {
     if (btnCrypto) btnCrypto.className = 'py-2 px-3 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
     if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold flex items-center justify-center gap-2 transition whitespace-nowrap';
@@ -59,6 +61,7 @@ function toggleFngTab(tab) {
     if (sourceText) sourceText.innerText = '출처: Alternative.me Crypto';
     if (sourceLink) sourceLink.href = 'https://alternative.me/crypto/fear-and-greed-index/';
     if (needle) needle.style.left = `${cryptoFngData.score}%`;
+    if (aiOrderFng) aiOrderFng.innerText = `${cryptoFngData.score}점 (코인 ${cryptoFngData.status.split(' ')[0]})`;
   }
 }
 
