@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof refreshAllRealtimeData === 'function') {
     refreshAllRealtimeData();
   }
+
+  if (typeof calcMonthlyDividend === 'function') {
+    calcMonthlyDividend();
+  }
   
   // Start High-Precision Securities Carousel with Staggered Multi-Slot Roll
   if (typeof startStaggeredSecuritiesTickers === 'function') {

@@ -16,13 +16,12 @@ function switchTab(tabId) {
 
   if (tabId === 'plan1') {
     setTimeout(() => {
-      if (typeof renderDividendChart === 'function') renderDividendChart();
-      if (typeof renderMonthlyDividendCalendarChart === 'function') renderMonthlyDividendCalendarChart();
-    }, 50);
+      if (typeof calcMonthlyDividend === 'function') calcMonthlyDividend();
+    }, 80);
   } else if (tabId === 'overview') {
     setTimeout(() => {
       if (typeof renderOverviewChart === 'function') renderOverviewChart();
-    }, 50);
+    }, 80);
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
