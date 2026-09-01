@@ -2,6 +2,7 @@
  * calculators.js - Financial Engines & ROI Calculators
  */
 let dividendChartInstance = null;
+let monthlyDividendCalendarChartInstance = null;
 let overviewPieChart = null;
 
 function calcTaxRefundPro() {
@@ -48,7 +49,88 @@ function calcMonthlyDividend() {
   const y10El = document.getElementById('res-year10-dividend');
   if (y10El) y10El.innerText = `₩ ${year10Div.toLocaleString()}원 / 월`;
 
+  // The Rich style Summary Badges
+  const badgeAnnual = document.getElementById('therich-annual-total');
+  if (badgeAnnual) badgeAnnual.innerText = `₩ ${Math.round(annualDiv).toLocaleString()}원`;
+
+  const badgeMonthly = document.getElementById('therich-monthly-avg');
+  if (badgeMonthly) badgeMonthly.innerText = `₩ ${monthlyDiv.toLocaleString()}원`;
+
+  const badgeYield = document.getElementById('therich-yield-rate');
+  if (badgeYield) badgeYield.innerText = `${(annualYield * 100).toFixed(1)}%`;
+
+  const badge10Y = document.getElementById('therich-10y-monthly');
+  if (badge10Y) badge10Y.innerText = `₩ ${year10Div.toLocaleString()}원`;
+
   renderDividendChart();
+  renderMonthlyDividendCalendarChart();
+}
+
+function renderMonthlyDividendCalendarChart() {
+  const ctx = document.getElementById('monthlyDividendCalendarChart');
+  if (!ctx) return;
+  if (monthlyDividendCalendarChartInstance) monthlyDividendCalendarChartInstance.destroy();
+
+  const investManwon = parseFloat(document.getElementById('div-invest-amount')?.value) || 5000;
+  const modelSelect = document.getElementById('div-model-select');
+  const model = modelSelect ? modelSelect.value : 'balanced';
+
+  let annualYield = 0.055;
+  if (model === 'income') annualYield = 0.092;
+  else if (model === 'growth') annualYield = 0.025;
+
+  const baseMonthly = (investManwon * 10000 * annualYield) / 12;
+  
+  // The Rich style 12-Month Calendar Distribution (Quarterly peak patterns + monthly baseline)
+  const monthMultipliers = [0.95, 0.92, 1.15, 0.96, 0.94, 1.18, 0.98, 0.95, 1.16, 0.97, 0.95, 1.20];
+  const months = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+  const monthData = monthMultipliers.map(m => Math.round(baseMonthly * m));
+
+  const currentMonthIdx = new Date().getMonth(); // 0-indexed
+
+  const bgColors = monthData.map((_, i) => i === currentMonthIdx ? '#F59E0B' : 'rgba(16, 185, 129, 0.7)');
+  const borderColors = monthData.map((_, i) => i === currentMonthIdx ? '#FDE68A' : '#10B981');
+
+  monthlyDividendCalendarChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: '월별 배당금 (원)',
+        data: monthData,
+        backgroundColor: bgColors,
+        borderColor: borderColors,
+        borderWidth: 1.5,
+        borderRadius: 8,
+        barPercentage: 0.65
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` ₩ ${ctx.parsed.y.toLocaleString()}원 (${ctx.dataIndex === currentMonthIdx ? '이번 달 🌟' : '예상'})`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: (ctx) => ctx.index === currentMonthIdx ? '#F59E0B' : '#94A3B8', font: { weight: 'bold' } }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: {
+            color: '#94A3B8',
+            callback: (v) => v >= 10000 ? Math.round(v / 10000) + '만' : v
+          }
+        }
+      }
+    }
+  });
 }
 
 function renderDividendChart() {

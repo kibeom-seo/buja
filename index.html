@@ -1283,12 +1283,81 @@
             </table>
           </div>
 
-          <!-- Interactive Dividend Calculator & Visual Bar Chart -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-slate-800">
+          <!-- ======================================================== -->
+          <!-- THE RICH STYLE: 4 DIVIDEND METRIC SUMMARY CARDS -->
+          <!-- ======================================================== -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-4 border-t border-slate-800">
+            <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold mb-1">
+                <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>연간 총 배당금</span>
+              </div>
+              <div class="text-lg sm:text-xl font-black text-white font-mono tabular" id="therich-annual-total">₩ 2,750,000원</div>
+              <div class="text-[10px] text-emerald-400 mt-1 font-bold">세전 연 배당 총액</div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold mb-1">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>월평균 실수령액</span>
+              </div>
+              <div class="text-lg sm:text-xl font-black text-emerald-400 font-mono tabular" id="therich-monthly-avg">₩ 229,166원</div>
+              <div class="text-[10px] text-slate-400 mt-1">매월 자동 지급 파이프라인</div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold mb-1">
+                <i data-lucide="percent" class="w-3.5 h-3.5 text-sky-400"></i>
+                <span>포트폴리오 배당률</span>
+              </div>
+              <div class="text-lg sm:text-xl font-black text-sky-300 font-mono tabular" id="therich-yield-rate">5.5%</div>
+              <div class="text-[10px] text-slate-400 mt-1">투자원금 대비 세전 수익률</div>
+            </div>
+
+            <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+              <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-bold mb-1">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-purple-400"></i>
+                <span>10년 복리 월배당</span>
+              </div>
+              <div class="text-lg sm:text-xl font-black text-purple-300 font-mono tabular" id="therich-10y-monthly">₩ 594,400원</div>
+              <div class="text-[10px] text-purple-400 mt-1 font-bold">+159% 눈덩이 성장 ❄️</div>
+            </div>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- THE RICH SIGNATURE: 12-MONTH DIVIDEND CALENDAR BAR CHART -->
+          <!-- ======================================================== -->
+          <div class="p-6 bg-slate-950/90 rounded-3xl border border-amber-500/30 space-y-4 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <i data-lucide="calendar-range" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <h4 class="font-black text-white text-sm sm:text-base flex items-center gap-2">
+                    <span>더리치형 12개월 배당 캘린더 & 월별 예상 수령액</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-800">1월 ~ 12월 전수 시뮬레이션</span>
+                  </h4>
+                  <p class="text-xs text-slate-400">골드(황금색) 막대는 <strong class="text-amber-400">이번 달(Current Month)</strong> 배당 예정액입니다.</p>
+                </div>
+              </div>
+              <div class="text-xs text-slate-400 font-mono bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>이번 달 강조 모드</span>
+              </div>
+            </div>
+
+            <div class="min-h-[220px] h-[240px] relative bg-slate-900/60 p-4 rounded-2xl border border-slate-800/80">
+              <canvas id="monthlyDividendCalendarChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Interactive Dividend Calculator & 15-Year Growth Line Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
             
             <div class="lg:col-span-5 space-y-4">
               <h4 class="font-bold text-white text-sm flex items-center gap-1.5">
-                <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i> 내 투자금 기준 실제 월배당금 산출기
+                <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i> 내 투자금 기준 배당 모델 변경
               </h4>
               
               <div class="space-y-3 text-xs">
@@ -1302,22 +1371,18 @@
                   <select id="div-model-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" onchange="calcMonthlyDividend()">
                     <option value="balanced">3040 밸런스 정석형 (연 분배율 약 5.5%)</option>
                     <option value="income">현금흐름 극대화 조기은퇴형 (연 분배율 약 9.2%)</option>
-                    <option value="growth">2030 배당성장형 (연 분배율 약 3.9%)</option>
+                    <option value="growth">2030 배당성장형 (연 분배율 약 2.5%)</option>
                   </select>
                 </div>
 
                 <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
                   <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">작년 실제 수령액 (월평균):</span>
-                    <span class="text-slate-300 font-mono font-bold" id="div-last-year-val">₩ 212,000 / 월</span>
-                  </div>
-                  <div class="flex justify-between text-sm">
-                    <span class="text-emerald-400 font-bold">올해 실제 예상액 (월평균):</span>
-                    <span class="text-emerald-400 font-mono font-black text-base" id="div-this-year-val">₩ 235,000 / 월</span>
+                    <span class="text-slate-400">월 예상 수령액:</span>
+                    <span class="text-emerald-400 font-mono font-bold text-sm" id="res-monthly-dividend">₩ 229,166원 / 월</span>
                   </div>
                   <div class="flex justify-between text-xs pt-1 border-t border-slate-800">
-                    <span class="text-slate-400">올해 연간 총 배당금:</span>
-                    <span class="text-white font-mono font-bold" id="div-annual-val">₩ 2,820,000 / 년</span>
+                    <span class="text-slate-400">10년 후 복리 월배당:</span>
+                    <span class="text-purple-300 font-mono font-bold text-sm" id="res-year10-dividend">₩ 594,400원 / 월</span>
                   </div>
                 </div>
               </div>
@@ -1325,10 +1390,10 @@
 
             <div class="lg:col-span-7 flex flex-col justify-between">
               <div class="flex justify-between items-center mb-2">
-                <h4 class="font-bold text-white text-xs">연도별 실제 배당금 성장 추이 (작년 vs 올해 vs 5년 후)</h4>
+                <h4 class="font-bold text-white text-xs">15개년 장기 복리 성장 곡선 (Snowball Effect)</h4>
                 <span class="text-[10px] text-slate-400">단위: 만원/월</span>
               </div>
-              <div class="min-h-[190px] relative bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80">
+              <div class="min-h-[190px] h-[200px] relative bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80">
                 <canvas id="dividendGrowthChart"></canvas>
               </div>
             </div>
