@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>부의 나침반 (Wealth Compass) - Pro Terminal</title>
+  
+  <!-- Modern CDN Stack: Tailwind, Lucide, Chart.js, Confetti -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#F59E0B',
+              goldLight: '#FDE68A',
+              goldDark: '#B45309',
+              accent: '#3B82F6',
+              success: '#10B981',
+              danger: '#EF4444',
+              warning: '#F59E0B',
+              purple: '#8B5CF6'
+            },
+            surface: {
+              base: '#080C14',
+              sub: '#0F172A',
+              card: '#131C31',
+              cardHover: '#182440',
+              border: 'rgba(255, 255, 255, 0.08)',
+              borderFocus: 'rgba(245, 158, 11, 0.4)'
+            }
+          },
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Menlo', 'monospace']
+          },
+          boxShadow: {
+            'glow-gold': '0 0 25px -5px rgba(245, 158, 11, 0.25)',
+            'glow-emerald': '0 0 25px -5px rgba(16, 185, 129, 0.25)',
+            'card': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800;900&display=swap');
+    
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: #080C14;
+      color: #F8FAFC;
+    }
+    
+    .gold-gradient-bg {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #92400E 100%);
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card-glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .card-glass-hover {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-glass-hover:hover {
+      border-color: rgba(245, 158, 11, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.1);
+    }
+    
+    /* Nav Button Styles */
+    .nav-pill-btn {
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-pill-btn.active {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #080C14;
+      font-weight: 800;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+    .nav-pill-btn:not(.active) {
+      background: rgba(15, 23, 42, 0.6);
+      color: #94A3B8;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .nav-pill-btn:not(.active):hover {
+      background: rgba(30, 41, 59, 0.8);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    /* Securities Terminal Sliding Carousel (Zero Jitter & Butter Smooth) */
+    .ticker-viewport {
+      height: 22px;
+      overflow: hidden;
+      position: relative;
+      width: 175px;
+    }
+    .ticker-slider {
+      display: flex;
+      flex-direction: column;
+      transform: translateY(0);
+      will-change: transform;
+    }
+    .ticker-slider.sliding {
+      transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: translateY(-22px);
+    }
+    .ticker-slider.no-trans {
+      transition: none !important;
+    }
+    
+    .ticker-row {
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    @keyframes priceFlashGreen {
+      0% { background-color: rgba(16, 185, 129, 0.4); color: #34D399; }
+      100% { background-color: transparent; }
+    }
+    @keyframes priceFlashRed {
+      0% { background-color: rgba(239, 68, 68, 0.4); color: #F87171; }
+      100% { background-color: transparent; }
+    }
+    .flash-up { animation: priceFlashGreen 0.8s ease-out; }
+    .flash-down { animation: priceFlashRed 0.8s ease-out; }
+    
+    /* Smooth Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #080C14; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    
+    .tabular { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- ========================================== -->
+  <!-- 1. TOP GLOBAL 3-SLOT ROLLING DICE TICKER BAR -->
+  <!-- ========================================== -->
+  <div class="bg-slate-950 border-b border-slate-800/80 py-2 px-4 text-[11px] overflow-x-auto no-scrollbar whitespace-nowrap">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Live Pulse Label -->
+      <div class="flex items-center gap-2 font-mono flex-shrink-0">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-slate-400 font-sans font-bold">LIVE MATRIX</span>
+      </div>
+
+      <!-- 3-SLOT HIGH-PRECISION SECURITIES CAROUSEL (ZERO JITTER & FIXED FRAME) -->
+      <div class="flex items-center gap-3 sm:gap-4 tabular font-mono text-xs overflow-hidden flex-1 max-w-5xl justify-around">
+        
+        <!-- USD/KRW Exchange Rate (Pinned Stable Widget) -->
+        <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800 flex-shrink-0 w-[140px] justify-between">
+          <span class="text-slate-400 font-sans text-[10px] font-bold">USD/KRW</span>
+          <span id="ticker-usdkrw" class="font-bold text-white text-xs">₩1,348.50</span>
+        </div>
+
+        <!-- SLOT 1: 🇺🇸 US STOCKS & ETFS (Fixed Width 245px, Smooth Slide) -->
+        <div class="flex items-center bg-slate-900/90 px-2.5 py-1 rounded-xl border border-sky-500/30 flex-shrink-0 w-[245px] h-[34px] shadow-sm">
+          <span class="w-[46px] text-center text-[9px] px-1 py-0.5 rounded bg-sky-950 text-sky-400 font-black border border-sky-800 flex-shrink-0 mr-2">US ETF</span>
+          <div class="ticker-viewport w-[175px]">
+            <div id="slider-us" class="ticker-slider">
+              <!-- Current Row -->
+              <div id="us-row-curr" class="ticker-row">
+                <span class="w-[66px] text-left truncate font-bold text-sky-300 font-sans text-xs">NASDAQ</span>
+                <span class="w-[58px] text-right font-bold text-white text-xs tabular">$18,420</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+1.15%</span>
+              </div>
+              <!-- Next Sliding Row -->
+              <div id="us-row-next" class="ticker-row">
+                <span class="w-[66px] text-left truncate font-bold text-sky-300 font-sans text-xs">S&P 500</span>
+                <span class="w-[58px] text-right font-bold text-white text-xs tabular">$5,580</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+0.78%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLOT 2: 🇰🇷 KOREA MONTHLY DIVIDEND ETFS (Fixed Width 250px, Smooth Slide) -->
+        <div class="flex items-center bg-slate-900/90 px-2.5 py-1 rounded-xl border border-emerald-500/30 flex-shrink-0 w-[250px] h-[34px] shadow-sm">
+          <span class="w-[46px] text-center text-[9px] px-1 py-0.5 rounded bg-emerald-950 text-emerald-400 font-black border border-emerald-800 flex-shrink-0 mr-2">월배당</span>
+          <div class="ticker-viewport w-[180px]">
+            <div id="slider-kr" class="ticker-slider">
+              <!-- Current Row -->
+              <div id="kr-row-curr" class="ticker-row">
+                <span class="w-[72px] text-left truncate font-bold text-emerald-300 font-sans text-xs">SOL미국배당</span>
+                <span class="w-[58px] text-right font-bold text-white text-xs tabular">₩10,450</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+0.48%</span>
+              </div>
+              <!-- Next Sliding Row -->
+              <div id="kr-row-next" class="ticker-row">
+                <span class="w-[72px] text-left truncate font-bold text-emerald-300 font-sans text-xs">TIGER배당+7%</span>
+                <span class="w-[58px] text-right font-bold text-white text-xs tabular">₩10,890</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+0.65%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLOT 3: 🌐 WEB3 RWA & NFT INFRA (Fixed Width 235px, Smooth Slide) -->
+        <div class="flex items-center bg-slate-900/90 px-2.5 py-1 rounded-xl border border-purple-500/30 flex-shrink-0 w-[235px] h-[34px] shadow-sm">
+          <span class="w-[46px] text-center text-[9px] px-1 py-0.5 rounded bg-purple-950 text-purple-400 font-black border border-purple-800 flex-shrink-0 mr-2">WEB3</span>
+          <div class="ticker-viewport w-[165px]">
+            <div id="slider-web3" class="ticker-slider">
+              <!-- Current Row -->
+              <div id="web3-row-curr" class="ticker-row">
+                <span class="w-[62px] text-left truncate font-bold text-purple-300 font-sans text-xs">LINK</span>
+                <span class="w-[54px] text-right font-bold text-white text-xs tabular">$15.24</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+3.20%</span>
+              </div>
+              <!-- Next Sliding Row -->
+              <div id="web3-row-next" class="ticker-row">
+                <span class="w-[62px] text-left truncate font-bold text-purple-300 font-sans text-xs">ONDO</span>
+                <span class="w-[54px] text-right font-bold text-white text-xs tabular">$0.84</span>
+                <span class="w-[45px] text-right text-emerald-400 text-[10px] font-bold tabular">+5.12%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Sync Status -->
+      <div class="flex items-center gap-2 text-slate-400 text-[10px] font-mono flex-shrink-0">
+        <i data-lucide="clock" class="w-3 h-3 text-slate-500"></i>
+        <span>동기화: <span id="last-refresh-time" class="text-slate-300">2026-09-01 22:20:00</span></span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. MAIN HEADER & BUTTON NAVIGATION + API SYNC -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 bg-slate-900/85 backdrop-blur-2xl border-b border-slate-800 shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('overview')">
+          <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-black text-lg group-hover:scale-105 transition transform">
+            ₩
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-black text-base sm:text-lg text-white tracking-tight">부의 나침반</h1>
+              <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30 font-mono">PRO TERMINAL</span>
+            </div>
+            <p class="text-[10px] text-slate-400">직장인 10억 자산 & FIRE 종합 관제</p>
+          </div>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div class="flex md:hidden items-center gap-1.5">
+          <button onclick="openMembershipModal()" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black flex items-center gap-1">
+            <i data-lucide="crown" class="w-3 h-3 text-amber-400"></i> VIP
+          </button>
+          <button onclick="openApiBridgeModal()" class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <i data-lucide="link-2" class="w-4 h-4"></i>
+          </button>
+          <button onclick="openUserSettingsModal()" class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
+            <i data-lucide="user-cog" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sleek Segmented Button Navigation (1-Line Compact Layout) -->
+      <nav class="flex items-center overflow-x-auto max-w-full no-scrollbar gap-1.5 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/90 text-xs">
+        <button onclick="switchTab('overview')" id="nav-overview" class="nav-pill-btn active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+          <span>종합 관제탑</span>
+        </button>
+
+        <button onclick="switchTab('plan1')" id="nav-plan1" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>1. 절세/월배당</span>
+        </button>
+
+        <button onclick="switchTab('plan2')" id="nav-plan2" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>2. 5분 무한매수</span>
+        </button>
+
+        <button onclick="switchTab('plan3')" id="nav-plan3" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+          <span>3. RWA/NFT</span>
+        </button>
+
+        <button onclick="switchTab('plan4')" id="nav-plan4" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+          <span>4. 꼬마빌딩</span>
+        </button>
+
+        <button onclick="switchTab('news')" id="nav-news" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="newspaper" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>경제 뉴스</span>
+        </button>
+
+        <button onclick="switchTab('vault')" id="nav-vault" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>지식 뷰어</span>
+        </button>
+      </nav>
+
+      <!-- Desktop Action Controls -->
+      <div class="hidden md:flex items-center gap-2">
+        <!-- VIP MEMBERSHIP BADGE -->
+        <button onclick="openMembershipModal()" class="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 text-xs font-black transition shadow-sm active:scale-95 group">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400 group-hover:scale-125 transition transform"></i>
+          <span>VIP 패밀리</span>
+        </button>
+
+        <!-- FINANCIAL OPEN API SYNC BUTTON -->
+        <button onclick="openApiBridgeModal()" id="btn-api-bridge" class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 text-xs font-bold transition shadow-sm active:scale-95 group">
+          <i data-lucide="link-2" class="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition transform"></i>
+          <span>API 연동</span>
+        </button>
+
+        <!-- USER PROFILE SETTINGS BUTTON -->
+        <button onclick="openUserSettingsModal()" id="btn-settings" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 hover:border-amber-500/40 flex items-center gap-1.5 text-xs font-bold transition shadow-sm active:scale-95 group">
+          <i data-lucide="user-cog" class="w-3.5 h-3.5 text-amber-400 group-hover:rotate-45 transition transform"></i>
+          <span id="nav-user-nickname-display">내 재정 설정</span>
+        </button>
+
+        <!-- Refresh Button -->
+        <button onclick="refreshAllRealtimeData()" id="btn-refresh" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 flex items-center gap-1.5 text-xs font-bold transition shadow-sm active:scale-95">
+          <i data-lucide="refresh-cw" id="refresh-icon" class="w-3.5 h-3.5"></i>
+          <span>갱신</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ========================================== -->
+  <!-- 3. FINANCIAL OPEN API BRIDGE MODAL -->
+  <!-- ========================================== -->
+  <div id="api-bridge-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="card-glass bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <i data-lucide="network" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-lg text-white">금융사 & 거래소 Open API 자동 연동 센터</h3>
+            <p class="text-xs text-slate-400">증권사(한투/키움/신한) 및 업비트 API로 계좌 잔고를 100% 자동 동기화합니다.</p>
+          </div>
+        </div>
+        <button onclick="closeApiBridgeModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Supported Institutions Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        
+        <!-- [1] 한국투자증권 (KIS Developers) -->
+        <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h4 class="font-black text-white text-sm">한국투자증권 (KIS)</h4>
+            </div>
+            <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">REST API</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            국내/해외주식, 연금저축, ISA 계좌의 실시간 예수금 및 보유 ETF 평가액 자동 조회
+          </p>
+          <div class="space-y-2">
+            <input type="text" id="api-kis-appkey" placeholder="KIS AppKey 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+            <input type="password" id="api-kis-appsecret" placeholder="KIS AppSecret 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+            <input type="text" id="api-kis-account" placeholder="계좌번호 8자리 (예: 12345678-01)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+          </div>
+        </div>
+
+        <!-- [2] 업비트 (Upbit Open API) -->
+        <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
+              <h4 class="font-black text-white text-sm">업비트 (Upbit)</h4>
+            </div>
+            <span class="text-[10px] text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">REST API</span>
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            업비트 원화 예수금 및 보유 코인(LINK, RENDER, IMX 등) 실시간 수량/평가액 자동 동기화
+          </p>
+          <div class="space-y-2">
+            <input type="text" id="api-upbit-access" placeholder="Upbit Access Key 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+            <input type="password" id="api-upbit-secret" placeholder="Upbit Secret Key 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Demo / Mock Auto Sync Feature -->
+      <div class="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div>
+          <div class="font-bold text-white text-xs flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+            <span>API 키가 아직 없으신가요?</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5">실제 한국투자증권 & 업비트의 표준 응답 규격(Mock Sync)으로 자산을 1초 만에 자동 채워보세요.</p>
+        </div>
+        <button onclick="runMockApiSync()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-amber-400 border border-amber-500/40 text-xs font-bold whitespace-nowrap transition">
+          ⚡ 원클릭 모의 잔고 자동 동기화
+        </button>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+        <button onclick="closeApiBridgeModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+          닫기
+        </button>
+        <button onclick="saveAndSyncOpenApi()" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/20 hover:scale-105 transition transform flex items-center gap-1.5">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          <span>실제 계좌 잔고 자동 가져오기</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. USER PROFILE & FINANCIAL SETTINGS MODAL -->
+  <!-- ========================================== -->
+  <div id="user-settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="card-glass bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+            <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-lg text-white">나의 맞춤형 재정 프로필 설정</h3>
+            <p class="text-xs text-slate-400">입력하신 정보는 대시보드 및 모든 계산기에 즉각 연동됩니다.</p>
+          </div>
+        </div>
+        <button onclick="closeUserSettingsModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quick Preset Profile Selector -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-300 block">⚡ 원클릭 맞춤형 프리셋 불러오기</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="applyProfilePreset('junior')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-xs transition">
+            <div class="font-bold text-emerald-400">2030 사회초년생</div>
+            <div class="text-[10px] text-slate-400">시드 1,500만 / 연봉 4천</div>
+          </button>
+          <button onclick="applyProfilePreset('standard')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-amber-500/40 rounded-xl text-left text-xs transition">
+            <div class="font-bold text-amber-400">3040 정석 직장인</div>
+            <div class="text-[10px] text-slate-400">시드 5,000만 / 연봉 6.5천</div>
+          </button>
+          <button onclick="applyProfilePreset('fire')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-xs transition">
+            <div class="font-bold text-purple-400">조기 은퇴 가속형</div>
+            <div class="text-[10px] text-slate-400">시드 1.2억 / 연봉 9천</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detailed Form Fields -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        
+        <!-- [1] 인적 & 소득 -->
+        <div class="space-y-3 p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
+          <h4 class="font-bold text-white text-xs flex items-center gap-1.5 text-amber-400">
+            <i data-lucide="user" class="w-3.5 h-3.5"></i> 1. 기본 인적 & 소득 정보
+          </h4>
+          <div>
+            <label class="text-slate-400 block mb-1">사용자 닉네임</label>
+            <input type="text" id="cfg-nickname" value="부자될 직장인" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">연간 총급여(세전 연봉, 만원)</label>
+            <input type="number" id="cfg-salary" value="6500" step="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">월 저축/투자 가능 여력 (만원)</label>
+            <input type="number" id="cfg-monthly-invest" value="150" step="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+        </div>
+
+        <!-- [2] 보유 자산 현황 -->
+        <div class="space-y-3 p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
+          <h4 class="font-bold text-white text-xs flex items-center gap-1.5 text-emerald-400">
+            <i data-lucide="wallet" class="w-3.5 h-3.5"></i> 2. 현재 보유 시드 & 계좌 잔고
+          </h4>
+          <div>
+            <label class="text-slate-400 block mb-1">현재 총 투자 자산 (시드, 만원)</label>
+            <input type="number" id="cfg-seed-total" value="5000" step="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-emerald-400 font-black text-sm">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">월 연금저축/IRP 납입액 (만원)</label>
+            <input type="number" id="cfg-pension-monthly" value="50" step="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">TQQQ 무한매수 운용 원금 (만원)</label>
+            <input type="number" id="cfg-inf-seed" value="1000" step="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+        </div>
+
+        <!-- [3] 목표 설정 -->
+        <div class="space-y-3 p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
+          <h4 class="font-bold text-white text-xs flex items-center gap-1.5 text-blue-400">
+            <i data-lucide="target" class="w-3.5 h-3.5"></i> 3. 재정 목표 (FIRE Goals)
+          </h4>
+          <div>
+            <label class="text-slate-400 block mb-1">1단계 목표 시드머니 (만원)</label>
+            <input type="number" id="cfg-target-seed" value="20000" step="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">목표 달성 희망 기간 (년)</label>
+            <select id="cfg-target-years" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+              <option value="3">3년 (공격적 가속)</option>
+              <option value="5">5년 (안정적 정석)</option>
+              <option value="7">7년 (여유로운 달성)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">최종 목표 월 패시브 인컴 (만원/월)</label>
+            <input type="number" id="cfg-target-monthly-income" value="300" step="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+        </div>
+
+        <!-- [4] 확장성 파라미터 (자산배분 & 신용) -->
+        <div class="space-y-3 p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
+          <h4 class="font-bold text-white text-xs flex items-center gap-1.5 text-purple-400">
+            <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i> 4. 자산배분 & 대출 신용 레버리지
+          </h4>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-slate-400 block mb-1 text-[10px]">코어(%)</label>
+              <input type="number" id="cfg-ratio-core" value="70" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold text-center">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1 text-[10px]">알파(%)</label>
+              <input type="number" id="cfg-ratio-alpha" value="20" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold text-center">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1 text-[10px]">웹3(%)</label>
+              <input type="number" id="cfg-ratio-web3" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-white font-bold text-center">
+            </div>
+          </div>
+          <div>
+            <label class="text-slate-400 block mb-1">예상 대출 가능 한도 (만원)</label>
+            <input type="number" id="cfg-loan-capacity" value="35000" step="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+        <button onclick="closeUserSettingsModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+          취소
+        </button>
+        <button onclick="saveUserProfileSettings()" class="px-6 py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 hover:scale-105 transition transform flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>설정 저장 및 전체 화면 즉각 반영</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 4. VIP MEMBERSHIP & PRIVATE OFFICE MODAL -->
+  <!-- ========================================== -->
+  <div id="membership-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="card-glass bg-slate-900 border border-amber-500/40 w-full max-w-3xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+            <i data-lucide="crown" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-lg text-white flex items-center gap-2">
+              <span>부의 나침반 VIP 멤버십 패밀리 오피스</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500 text-slate-950 font-black">MEMBERS ONLY</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">완전한 경제적 자유(FIRE)를 함께 달성할 스마트 투자자를 위한 프리미엄 등급 체계</p>
+          </div>
+        </div>
+        <button onclick="closeMembershipModal()" class="text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- 3 Membership Tiers Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        
+        <!-- Basic Plan -->
+        <div class="p-5 bg-slate-950 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-slate-400 text-sm">🥉 Basic</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">기본</span>
+            </div>
+            <div class="text-xl font-black text-white">무료 (Free)</div>
+            <ul class="space-y-1.5 text-slate-400 text-[11px]">
+              <li>✓ 종합 관제탑 시세 조회</li>
+              <li>✓ 절세 & 배당 기본 계산기</li>
+              <li>✓ 지식 베이스 MD 열람</li>
+            </ul>
+          </div>
+          <button class="w-full py-2 rounded-xl bg-slate-800 text-slate-300 font-bold">현재 이용중</button>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="p-5 bg-slate-950 rounded-2xl border border-emerald-500/40 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-emerald-400 text-sm">🥈 Pro</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-800">추천</span>
+            </div>
+            <div class="text-xl font-black text-white">₩ 1.9만 <span class="text-xs text-slate-400 font-normal">/ 월</span></div>
+            <ul class="space-y-1.5 text-slate-300 text-[11px]">
+              <li>✓ <strong>한투/업비트 Open API</strong> 실시간 잔고 자동 동기화</li>
+              <li>✓ <strong>AI 당일 맞춤 매매 오더</strong> 자동 산출</li>
+              <li>✓ 글로벌 외신 한국어 3줄 요약 & 속보 알림</li>
+            </ul>
+          </div>
+          <button onclick="showToast('🥈 Pro 멤버십 등록 완료! (모든 기능이 활성화되었습니다)', 'success'); closeMembershipModal();" class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black transition">Pro 시작하기</button>
+        </div>
+
+        <!-- VIP Family Office Plan -->
+        <div class="p-5 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 rounded-2xl border border-amber-500/50 flex flex-col justify-between space-y-4 shadow-lg">
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-amber-400 text-sm flex items-center gap-1">
+                <i data-lucide="crown" class="w-3.5 h-3.5"></i> 🥇 VIP
+              </span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black">ALL-ACCESS</span>
+            </div>
+            <div class="text-xl font-black text-amber-400">₩ 9.9만 <span class="text-xs text-slate-400 font-normal">/ 월</span></div>
+            <ul class="space-y-1.5 text-slate-200 text-[11px]">
+              <li>✓ <strong>수도권 꼬마빌딩 급매물</strong> AI 가치평가 리포트</li>
+              <li>✓ <strong>13F 거장 포트폴리오 변동</strong> 실시간 신호</li>
+              <li>✓ 1:1 맞춤형 4대 파이프라인 정밀 진단</li>
+              <li>✓ 모바일 PWA 무제한 알림 및 전용 핫라인</li>
+            </ul>
+          </div>
+          <button onclick="showToast('👑 VIP 패밀리 오피스 멤버십 환영합니다! 최상위 VIP 전용 혜택이 영구 적용되었습니다.', 'success'); closeMembershipModal();" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-black text-xs hover:scale-105 transition transform shadow-lg shadow-amber-500/20">VIP 평생 멤버 가입</button>
+        </div>
+
+      </div>
+
+      <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-slate-400 text-xs flex items-center justify-between">
+        <span>💡 모바일 앱(PWA) 설치 후 로그인하시면 이동 중에도 실시간 푸시 알림을 수신하실 수 있습니다.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. MAIN WORKSPACE CONTAINER -->
+  <!-- ========================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- ======================================================== -->
+    <!-- VIEW 0: OVERVIEW MASTER DASHBOARD -->
+    <!-- ======================================================== -->
+    <section id="view-overview" class="space-y-6">
+      
+      <!-- Personalized Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 border border-slate-800 p-6 sm:p-8 shadow-2xl">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+          <div class="space-y-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span id="hero-user-greeting">안녕하세요, 부자될 직장인님!</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+              우리의 방향은 단 하나: <span class="gold-gradient-text">완전한 경제적 자유(FIRE)</span>
+            </h2>
+            <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed" id="hero-strategy-summary">
+              현재 보유 자산 <strong>5,000만원</strong>을 기반으로, <strong>3년 내 2억원 시드</strong>를 달성하고 꼬마빌딩 밸류애드로 <strong>월세 300만원</strong>의 완전한 자유를 구축합니다.
+            </p>
+
+            <!-- Personalized Live Seed Progress Bar -->
+            <div class="pt-2 max-w-xl space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-400">1단계 시드머니 달성률 (<span id="progress-seed-current">₩ 5,000만</span> / <span id="progress-seed-target">2억</span>)</span>
+                <span class="text-amber-400 font-bold font-mono" id="progress-seed-pct">25.0% 달성</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                <div id="progress-seed-bar" class="gold-gradient-bg h-full rounded-full transition-all duration-700" style="width: 25%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Dynamic Ribbon -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center">
+              <div class="text-[10px] text-slate-400 font-semibold">내 총 시드 자산</div>
+              <div class="text-base sm:text-lg font-black text-amber-400 tabular mt-0.5" id="metric-user-seed">₩ 5,000만</div>
+            </div>
+            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center">
+              <div class="text-[10px] text-slate-400 font-semibold">월 절세 환급+배당</div>
+              <div class="text-base sm:text-lg font-black text-emerald-400 tabular mt-0.5" id="metric-user-monthly-gain">₩ 31.7만+</div>
+            </div>
+            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center col-span-2 sm:col-span-1">
+              <div class="text-[10px] text-slate-400 font-semibold">최종 FIRE 목표</div>
+              <div class="text-base sm:text-lg font-black text-blue-400 tabular mt-0.5" id="metric-user-fire-goal">월세 300만</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- AI AUTONOMOUS DAILY ACTION ORDER HUB (당일 실전 매매 제안) -->
+      <!-- ======================================================== -->
+      <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 rounded-3xl p-5 sm:p-6 border border-amber-500/40 shadow-xl space-y-4">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-slate-800/80">
+          <div class="flex items-center gap-2.5">
+            <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/40">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <h3 class="font-black text-sm sm:text-base text-white flex items-center gap-2">
+                <span>AI 맞춤 당일 실전 투자 오더 브리핑</span>
+                <span class="text-[9px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-800">오늘 밤 즉시 실행</span>
+              </h3>
+              <p class="text-[11px] text-slate-300">내 자산과 시장가를 실시간 분석하여 증권사/거래소에 입력할 구체적 매매 오더를 제안합니다.</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+            2026.09.01 야간 미국장 기준
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          
+          <!-- Order 1: TQQQ Infinite Order -->
+          <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-amber-500/30 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-amber-400 text-xs flex items-center gap-1">
+                <i data-lucide="zap" class="w-3.5 h-3.5"></i> TQQQ 무한매수
+              </span>
+              <span class="text-[9px] text-amber-300 bg-amber-950/80 px-1.5 py-0.5 rounded font-mono font-bold" id="ai-order-tqqq-amt">1회 ₩25만 ($185)</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 font-mono">
+              <div class="flex justify-between">
+                <span class="text-slate-400">LOC 1 (평단):</span>
+                <span class="text-white font-bold" id="ai-order-tqqq-loc1">$65.00 에 0.5회</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">LOC 2 (+5%):</span>
+                <span class="text-emerald-400 font-bold" id="ai-order-tqqq-loc2">$65.62 에 0.5회</span>
+              </div>
+              <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
+                <span class="text-slate-400">목표 익절가:</span>
+                <span class="text-amber-400 font-bold" id="ai-order-tqqq-target">$71.50 (+10%)</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">키움/한투 앱에서 밤 11시 30분 LOC 2개 예약</p>
+          </div>
+
+          <!-- Order 2: Monthly Dividend Accumulation -->
+          <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-emerald-500/30 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-emerald-400 text-xs flex items-center gap-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> SOL 미국배당
+              </span>
+              <span class="text-[9px] text-emerald-300 bg-emerald-950/80 px-1.5 py-0.5 rounded font-mono font-bold">월 50만 적립</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 font-mono">
+              <div class="flex justify-between">
+                <span class="text-slate-400">매수 추천가:</span>
+                <span class="text-white font-bold">₩10,450 전후</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">추천 수량:</span>
+                <span class="text-emerald-400 font-bold">약 47~48주</span>
+              </div>
+              <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
+                <span class="text-slate-400">예상 월배당:</span>
+                <span class="text-emerald-400 font-bold">+ ₩16,000 / 월 누적</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">연금저축/ISA 계좌에서 자동 매수</p>
+          </div>
+
+          <!-- Order 3: Web3 Infrastructure DCA -->
+          <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-purple-500/30 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-purple-400 text-xs flex items-center gap-1">
+                <i data-lucide="layers" class="w-3.5 h-3.5"></i> 웹3 RWA 탑픽
+              </span>
+              <span class="text-[9px] text-purple-300 bg-purple-950/80 px-1.5 py-0.5 rounded font-mono font-bold">월 15만 분할</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 font-mono">
+              <div class="flex justify-between">
+                <span class="text-slate-400">1순위 추천:</span>
+                <span class="text-white font-bold">LINK ($15.24)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">2순위 추천:</span>
+                <span class="text-purple-300 font-bold">ONDO ($0.84)</span>
+              </div>
+              <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
+                <span class="text-slate-400">기관 자금 채택:</span>
+                <span class="text-emerald-400 font-bold">블랙록 BUIDL 수혜</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">업비트/빗썸에서 분할 적립</p>
+          </div>
+
+          <!-- Order 4: Buffett Cash Shield / Bargain Hunting -->
+          <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-blue-500/30 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-black text-blue-400 text-xs flex items-center gap-1">
+                <i data-lucide="anchor" class="w-3.5 h-3.5"></i> 버핏 바겐세일 대기
+              </span>
+              <span class="text-[9px] text-blue-300 bg-blue-950/80 px-1.5 py-0.5 rounded font-mono font-bold">대기 상태 🟡</span>
+            </div>
+            <div class="space-y-1 text-[11px] text-slate-300 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 font-mono">
+              <div class="flex justify-between">
+                <span class="text-slate-400">현재 공포지수:</span>
+                <span class="text-white font-bold">47점 (중립)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">발동 조건:</span>
+                <span class="text-rose-400 font-bold">25점 이하 (극단 공포)</span>
+              </div>
+              <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
+                <span class="text-slate-400">대기 전략:</span>
+                <span class="text-blue-400 font-bold">현금 & 배당 비축 유지</span>
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400">25점 진입 시 나스닥 지수 폭풍 매수</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 4 Pillars Core Navigation Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div onclick="switchTab('plan1')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-emerald-500 group">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">제안 01</span>
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400 group-hover:scale-110 transition"></i>
+            </div>
+            <h3 class="font-bold text-base text-white">절세 3대 계좌 & 월배당</h3>
+            <p class="text-xs text-slate-400 mt-1">연금저축 연 99만 환급 + 작년/올해 실제 월배당금 비교 분석</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+            <span class="text-slate-400">코어 자산</span>
+            <span class="text-emerald-400 font-bold" id="card-ratio-core">70% 배분</span>
+          </div>
+        </div>
+
+        <div onclick="switchTab('plan2')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-amber-500 group">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">제안 02</span>
+              <i data-lucide="zap" class="w-5 h-5 text-amber-400 group-hover:scale-110 transition"></i>
+            </div>
+            <h3 class="font-bold text-base text-white">5분 무한매수 & 공포지수</h3>
+            <p class="text-xs text-slate-400 mt-1">라오어 TQQQ 40분할 LOC 주문 + CNN 공포지수 25 이하 줍줍</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+            <span class="text-slate-400">알파 수익</span>
+            <span class="text-amber-400 font-bold" id="card-ratio-alpha">20% 배분</span>
+          </div>
+        </div>
+
+        <div onclick="switchTab('plan3')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-purple-500 group">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-800">제안 03</span>
+              <i data-lucide="coins" class="w-5 h-5 text-purple-400 group-hover:scale-110 transition"></i>
+            </div>
+            <h3 class="font-bold text-base text-white">RWA & NFT 독점 인프라</h3>
+            <p class="text-xs text-slate-400 mt-1">블랙록 연동 ONDO, SWIFT 표준 LINK, 애플 GPU RENDER</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+            <span class="text-slate-400">미래 엔진</span>
+            <span class="text-purple-400 font-bold" id="card-ratio-web3">10% 배분</span>
+          </div>
+        </div>
+
+        <div onclick="switchTab('plan4')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-blue-500 group">
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">제안 04</span>
+              <i data-lucide="building-2" class="w-5 h-5 text-blue-400 group-hover:scale-110 transition"></i>
+            </div>
+            <h3 class="font-bold text-base text-white">꼬마빌딩 밸류애드 (FIRE)</h3>
+            <p class="text-xs text-slate-400 mt-1">대출 70% 레버리지 + 구옥 상가 용도변경 & 리모델링</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+            <span class="text-slate-400">최종 목표</span>
+            <span class="text-blue-400 font-bold" id="card-target-income">월세 300만+ 사표</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Real-time Market Indicators & Dual-Tab Fear & Greed Terminal -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Interactive Dual-Tab Fear & Greed Card -->
+        <div class="card-glass rounded-3xl p-6 border border-slate-800 space-y-4">
+          
+          <!-- Card Header & Clean Segmented Buttons (1-Line Guaranteed) -->
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-base text-white flex items-center gap-2 whitespace-nowrap">
+                <i data-lucide="gauge" class="w-5 h-5 text-amber-400"></i> 시장 심리 게이지
+              </h3>
+              <span class="text-[10px] text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE
+              </span>
+            </div>
+
+            <!-- Full-Width Dual Tabs -->
+            <div class="grid grid-cols-2 bg-slate-950 p-1 rounded-2xl border border-slate-800 text-xs font-bold gap-1.5">
+              <button onclick="toggleFngTab('stock')" id="fng-tab-stock" class="py-2 px-3 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap font-black">
+                <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>NASDAQ 주식</span>
+              </button>
+              <button onclick="toggleFngTab('crypto')" id="fng-tab-crypto" class="py-2 px-3 rounded-xl text-slate-400 hover:text-white flex items-center justify-center gap-2 transition whitespace-nowrap font-bold">
+                <span class="w-4 h-4 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] inline-flex items-center justify-center font-mono leading-none flex-shrink-0 shadow-sm">₿</span>
+                <span>비트코인</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/90 rounded-2xl p-5 text-center border border-slate-800/80 space-y-4">
+            
+            <!-- Large Vivid Emblem + Big Score Display -->
+            <div class="flex items-center justify-center gap-4 py-1">
+              
+              <!-- Large Dynamic Symbol Logo Badge -->
+              <div id="fng-large-emblem" class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shadow-lg shadow-sky-500/10 flex-shrink-0">
+                <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+
+              <div class="text-left">
+                <div class="text-4xl sm:text-5xl font-black text-amber-400 tabular leading-none" id="fng-main-score">47</div>
+                <div class="text-sm font-bold text-white mt-1 whitespace-nowrap" id="fng-main-status">Neutral (중립)</div>
+                <div class="text-[10px] text-slate-400 whitespace-nowrap" id="fng-scale-desc">CNN Business 공식 지수</div>
+              </div>
+            </div>
+
+            <!-- Dynamic Progress Bar with Needle Pointer -->
+            <div class="space-y-1.5">
+              <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden flex relative">
+                <div class="bg-rose-500 h-full w-1/4" title="Extreme Fear (0-25)"></div>
+                <div class="bg-amber-500 h-full w-1/4" title="Fear (25-45)"></div>
+                <div class="bg-slate-500 h-full w-1/4" title="Neutral (45-75)"></div>
+                <div class="bg-emerald-500 h-full w-1/4" title="Greed (75-100)"></div>
+              </div>
+              <div class="relative w-full h-2">
+                <div id="fng-gauge-needle" class="absolute -top-3.5 transform -translate-x-1/2 transition-all duration-500 flex flex-col items-center" style="left: 47%;">
+                  <span class="w-3 h-3 bg-white rounded-full shadow-lg border-2 border-slate-950 ring-2 ring-amber-400"></span>
+                </div>
+              </div>
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>0 (공포)</span>
+                <span>50</span>
+                <span>100 (탐욕)</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 text-left space-y-1.5">
+              <div class="text-amber-400 font-bold flex items-center justify-between">
+                <span class="flex items-center gap-1 whitespace-nowrap"><i data-lucide="target" class="w-3.5 h-3.5"></i> 실전 매매 가이드:</span>
+                <span class="text-[10px] text-slate-400 font-mono whitespace-nowrap" id="fng-current-tag">47점 대기</span>
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed" id="fng-action-text">
+                현재 미국 주식 시장은 <strong>중립 구간(47점)</strong>입니다. 기존 정액 적립식을 유지하며, 지수가 <strong>25점 이하(극단적 공포)</strong>로 진입하면 모아둔 상여금으로 QQQ/QLD 바겐세일 집중 매수를 집행하세요!
+              </p>
+              <div class="pt-2 border-t border-slate-800/80 flex justify-between items-center text-[10px] text-slate-400">
+                <span id="fng-source-text" class="whitespace-nowrap">출처: CNN Business Stock</span>
+                <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" id="fng-source-link" class="text-amber-400 hover:underline flex items-center gap-0.5 whitespace-nowrap">
+                  공식 차트 <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Crypto Infrastructure Ticker -->
+        <div class="card-glass rounded-3xl p-6 border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-purple-400"></i> 웹3 인프라 실시간 시세
+            </h3>
+            <button onclick="refreshAllRealtimeData()" class="text-[10px] text-slate-400 hover:text-amber-400 flex items-center gap-1">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i> 갱신
+            </button>
+          </div>
+
+          <div class="space-y-2 text-xs" id="crypto-cards">
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                <div>
+                  <div class="font-bold text-white">LINK (체인링크)</div>
+                  <div class="text-[10px] text-slate-500">RWA 오라클 표준</div>
+                </div>
+              </div>
+              <div class="text-right tabular font-mono">
+                <div class="font-bold text-white text-sm" id="card-price-link">$15.24</div>
+                <div class="text-emerald-400 text-[10px]" id="card-chg-link">+3.20%</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <div>
+                  <div class="font-bold text-white">ONDO (온도)</div>
+                  <div class="text-[10px] text-slate-500">미국 국채 토큰화</div>
+                </div>
+              </div>
+              <div class="text-right tabular font-mono">
+                <div class="font-bold text-white text-sm" id="card-price-ondo">$0.84</div>
+                <div class="text-emerald-400 text-[10px]" id="card-chg-ondo">+5.12%</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                <div>
+                  <div class="font-bold text-white">RENDER (렌더)</div>
+                  <div class="text-[10px] text-slate-500">애플 3D/AI GPU</div>
+                </div>
+              </div>
+              <div class="text-right tabular font-mono">
+                <div class="font-bold text-white text-sm" id="card-price-render">$6.45</div>
+                <div class="text-rose-400 text-[10px]" id="card-chg-render">-1.18%</div>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+                <div>
+                  <div class="font-bold text-white">IMX (이뮤터블X)</div>
+                  <div class="text-[10px] text-slate-500">디즈니/게임 L2</div>
+                </div>
+              </div>
+              <div class="text-right tabular font-mono">
+                <div class="font-bold text-white text-sm" id="card-price-imx">$1.65</div>
+                <div class="text-emerald-400 text-[10px]" id="card-chg-imx">+2.40%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic User Asset Allocation Pie Chart Card -->
+        <div class="card-glass rounded-3xl p-6 border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-base text-white flex items-center gap-2">
+              <i data-lucide="pie-chart" class="w-5 h-5 text-blue-400"></i> 내 자산 배분 비중
+            </h3>
+            <button onclick="openUserSettingsModal()" class="text-xs text-amber-400 font-bold hover:underline">비중 수정</button>
+          </div>
+
+          <div class="flex flex-col items-center justify-center min-h-[190px] relative">
+            <div class="w-[170px] h-[170px]">
+              <canvas id="overviewPieChart"></canvas>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center text-xs pt-2 border-t border-slate-800">
+            <div class="p-2 bg-slate-950 rounded-lg">
+              <div class="text-[10px] text-emerald-400 font-bold">절세 코어</div>
+              <div class="font-black text-white" id="stat-ratio-core">70%</div>
+            </div>
+            <div class="p-2 bg-slate-950 rounded-lg">
+              <div class="text-[10px] text-amber-400 font-bold">5분 무한매수</div>
+              <div class="font-black text-white" id="stat-ratio-alpha">20%</div>
+            </div>
+            <div class="p-2 bg-slate-950 rounded-lg">
+              <div class="text-[10px] text-purple-400 font-bold">웹3 인프라</div>
+              <div class="font-black text-white" id="stat-ratio-web3">10%</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- WALL STREET 3 TITANS RADAR (BUFFETT, DALIO, DRUCKENMILLER) -->
+      <!-- ======================================================== -->
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-amber-500/30 space-y-6">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <i data-lucide="crown" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-black text-lg text-white flex items-center gap-2">
+                <span>월가 3대 투자 거장(Gurus) 실시간 레이더 & 포트폴리오 동향</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 font-mono">13F 공시 연동</span>
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">워런 버핏, 레이 달리오, 스탠리 드라켄밀러의 최신 매매 전략과 자산배분 인사이트</p>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 flex-shrink-0">
+            기준: 2026 Q3 최신 포지션
+          </div>
+        </div>
+
+        <!-- 3 Titans Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          
+          <!-- 1. 워런 버핏 (Warren Buffett) -->
+          <div class="bg-slate-950/90 rounded-2xl p-5 border border-slate-800/90 space-y-4 hover:border-amber-500/40 transition">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-black text-sm font-serif">
+                  WB
+                </div>
+                <div>
+                  <h4 class="font-black text-base text-white">워런 버핏</h4>
+                  <div class="text-[11px] text-slate-400 font-mono">Berkshire Hathaway ($1.04T)</div>
+                </div>
+              </div>
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">역대 최대 현금</span>
+            </div>
+
+            <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-400">
+                <span>현금성 자산 보유액:</span>
+                <span class="text-amber-400 font-bold font-mono">$2,769억 (약 373조원)</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>최대 보유 종목:</span>
+                <span class="text-white font-bold">Apple, 단기 미국채(T-Bills)</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <div class="text-amber-400 font-bold text-[11px] flex items-center gap-1">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> 최근 핵심 매매 액션:
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                • <strong>애플 비중 일부 차익실현</strong> 및 연 5%대 <strong>초단기 미국 국채(T-Bills)</strong> 집중 매입으로 무위험 고배당 수익 확보.<br>
+                • <strong>옥시덴탈(석유에너지) & 처브(보험)</strong> 지속 추가 매수하여 인플레이션 방어.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+              <span class="text-slate-400 text-[11px]">우리의 적용:</span>
+              <span class="text-emerald-400 font-bold text-[11px]">월배당 ETF & 현금흐름 강화</span>
+            </div>
+          </div>
+
+          <!-- 2. 레이 달리오 (Ray Dalio) -->
+          <div class="bg-slate-950/90 rounded-2xl p-5 border border-slate-800/90 space-y-4 hover:border-emerald-500/40 transition">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-black text-sm font-serif">
+                  RD
+                </div>
+                <div>
+                  <h4 class="font-black text-base text-white">레이 달리오</h4>
+                  <div class="text-[11px] text-slate-400 font-mono">Bridgewater Associates ($124B)</div>
+                </div>
+              </div>
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">올웨더 거시 헤지</span>
+            </div>
+
+            <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-400">
+                <span>핵심 운용 철학:</span>
+                <span class="text-emerald-400 font-bold font-mono">부채 사이클 & 올웨더 분산</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>최대 보유 종목:</span>
+                <span class="text-white font-bold">S&P 500 ETF, 금(Gold), 필수소비</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <div class="text-emerald-400 font-bold text-[11px] flex items-center gap-1">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> 최근 핵심 매매 액션:
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                • 미국 정부의 재정 부채 급증에 대비해 <strong>금(Gold/GLD) 및 실물 원자재 자산</strong> 비중 대폭 확대.<br>
+                • <strong>신흥국 우량 자산 및 필수소비재(P&G, 코카콜라)</strong>로 주식 포트폴리오의 경기방어력 극대화.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+              <span class="text-slate-400 text-[11px]">우리의 적용:</span>
+              <span class="text-emerald-400 font-bold text-[11px]">70:20:10 분산 자산배분</span>
+            </div>
+          </div>
+
+          <!-- 3. 스탠리 드라켄밀러 (Stanley Druckenmiller) -->
+          <div class="bg-slate-950/90 rounded-2xl p-5 border border-slate-800/90 space-y-4 hover:border-purple-500/40 transition">
+            <div class="flex justify-between items-start">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-black text-sm font-serif">
+                  SD
+                </div>
+                <div>
+                  <h4 class="font-black text-base text-white">스탠리 드라켄밀러</h4>
+                  <div class="text-[11px] text-slate-400 font-mono">Duquesne Family Office ($3.5B)</div>
+                </div>
+              </div>
+              <span class="text-[10px] text-purple-400 bg-purple-950 px-2 py-0.5 rounded border border-purple-800 font-bold">AI 인프라 순환매</span>
+            </div>
+
+            <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+              <div class="flex justify-between text-slate-400">
+                <span>30년 연평균 수익률:</span>
+                <span class="text-purple-400 font-bold font-mono">연 30%+ (단 한해도 손실 無)</span>
+              </div>
+              <div class="flex justify-between text-slate-400">
+                <span>최대 관심 섹터:</span>
+                <span class="text-white font-bold">AI 하드웨어, 원전/전력망, 구리</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <div class="text-purple-400 font-bold text-[11px] flex items-center gap-1">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> 최근 핵심 매매 액션:
+              </div>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                • 엔비디아 일부 익절 후 <strong>AI 데이터센터용 전력 설비(원자력/소형원자로 SMR, 변압기)</strong> 집중 매수.<br>
+                • <strong>미국 장기 국채 숏(금리 상승 베팅)</strong> 및 AI GPU 분산망/공간컴퓨팅 인프라에 공격적 포지션 구축.
+              </p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+              <span class="text-slate-400 text-[11px]">우리의 적용:</span>
+              <span class="text-purple-400 font-bold text-[11px]">TQQQ 무한매수 & RWA/NFT 인프라</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Synthesis Box -->
+        <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="text-amber-400 font-black text-sm">💡 3대 거장의 공통 메시지:</span>
+            <span class="text-slate-300">"고평가 국면에선 <strong>충분한 현금 방패(버핏)</strong>와 <strong>자산 배분(달리오)</strong>을 갖추고, <strong>독점 인프라(드라켄밀러)</strong>에 집중하라."</span>
+          </div>
+          <button onclick="switchTab('plan2')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-850 text-amber-400 border border-amber-500/40 font-bold whitespace-nowrap transition">
+            5분 무한매수 & 알파 전략 보기 ➔
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 1: PROPOSAL 1 DETAIL -->
+    <!-- ======================================================== -->
+    <section id="view-plan1" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">PROPOSAL 01</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">절세 3대 계좌 & 실제 월배당금 분석 센터</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">연금저축 연 99만 환급 + 작년/올해 실제 주당 배당금 내역 & 배당 성장 차트</p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-emerald-950 text-emerald-400 font-bold text-xs border border-emerald-800" id="badge-plan1-ratio">코어 자산 70%</span>
+        </div>
+
+        <!-- Historical Monthly Dividend Tracker -->
+        <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="font-black text-white text-lg flex items-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-5 h-5 text-emerald-400"></i> 국내 상장 주요 월배당 ETF 실제 지급액 비교
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">작년(2024년) 실지급 분배금 vs 올해(2025/2026년) 예상 분배금 및 배당 성장률</p>
+            </div>
+            <span class="text-xs font-bold text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-xl border border-emerald-800">
+              배당 지속 성장 중 📈
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900/90 text-slate-400 border-b border-slate-800 text-[11px] font-semibold">
+                  <th class="py-3 px-4">종목명 (종목코드)</th>
+                  <th class="py-3 px-3">투자 유형</th>
+                  <th class="py-3 px-3 text-right">작년 월평균(주당)</th>
+                  <th class="py-3 px-3 text-right">올해 월평균(주당)</th>
+                  <th class="py-3 px-3 text-right">연간 분배율</th>
+                  <th class="py-3 px-4 text-right">배당 성장률</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 tabular font-mono">
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="py-3 px-4 font-sans font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> SOL 미국배당다우존스 (446720)
+                  </td>
+                  <td class="py-3 px-3 font-sans text-slate-300">한국판 SCHD 배당성장</td>
+                  <td class="py-3 px-3 text-right text-slate-400">₩34.2원</td>
+                  <td class="py-3 px-3 text-right font-bold text-emerald-400">₩38.5원</td>
+                  <td class="py-3 px-3 text-right text-white">연 3.8% ~ 4.2%</td>
+                  <td class="py-3 px-4 text-right text-emerald-400 font-bold">+12.5% 🔺</td>
+                </tr>
+
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="py-3 px-4 font-sans font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> TIGER 미국배당다우존스 (458730)
+                  </td>
+                  <td class="py-3 px-3 font-sans text-slate-300">최대 시총 배당성장</td>
+                  <td class="py-3 px-3 text-right text-slate-400">₩33.8원</td>
+                  <td class="py-3 px-3 text-right font-bold text-amber-400">₩38.0원</td>
+                  <td class="py-3 px-3 text-right text-white">연 3.8% ~ 4.1%</td>
+                  <td class="py-3 px-4 text-right text-emerald-400 font-bold">+12.4% 🔺</td>
+                </tr>
+
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="py-3 px-4 font-sans font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span> TIGER 미국배당+7%프리미엄 (458760)
+                  </td>
+                  <td class="py-3 px-3 font-sans text-slate-300">타깃 커버드콜 고배당</td>
+                  <td class="py-3 px-3 text-right text-slate-400">₩64.5원</td>
+                  <td class="py-3 px-3 text-right font-bold text-blue-400">₩69.0원</td>
+                  <td class="py-3 px-3 text-right text-white">연 7.8% ~ 8.4%</td>
+                  <td class="py-3 px-4 text-right text-emerald-400 font-bold">+7.0% 🔺</td>
+                </tr>
+
+                <tr class="hover:bg-slate-900/40 transition">
+                  <td class="py-3 px-4 font-sans font-bold text-white flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span> TIGER 미국30년국채+12% (476550)
+                  </td>
+                  <td class="py-3 px-3 font-sans text-slate-300">채권형 초고배당</td>
+                  <td class="py-3 px-3 text-right text-slate-400">₩96.0원</td>
+                  <td class="py-3 px-3 text-right font-bold text-purple-400">₩102.5원</td>
+                  <td class="py-3 px-3 text-right text-white">연 11.8% ~ 12.3%</td>
+                  <td class="py-3 px-4 text-right text-emerald-400 font-bold">+6.8% 🔺</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Interactive Dividend Calculator & Visual Bar Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4 border-t border-slate-800">
+            
+            <div class="lg:col-span-5 space-y-4">
+              <h4 class="font-bold text-white text-sm flex items-center gap-1.5">
+                <i data-lucide="calculator" class="w-4 h-4 text-emerald-400"></i> 내 투자금 기준 실제 월배당금 산출기
+              </h4>
+              
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="text-slate-400 block mb-1">월배당 ETF 총 투자금 (만원)</label>
+                  <input type="number" id="div-invest-amount" value="5000" step="500" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold text-base" oninput="calcMonthlyDividend()">
+                </div>
+
+                <div>
+                  <label class="text-slate-400 block mb-1">선택 포트폴리오 모델</label>
+                  <select id="div-model-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" onchange="calcMonthlyDividend()">
+                    <option value="balanced">3040 밸런스 정석형 (연 분배율 약 5.5%)</option>
+                    <option value="income">현금흐름 극대화 조기은퇴형 (연 분배율 약 9.2%)</option>
+                    <option value="growth">2030 배당성장형 (연 분배율 약 3.9%)</option>
+                  </select>
+                </div>
+
+                <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+                  <div class="flex justify-between text-xs">
+                    <span class="text-slate-400">작년 실제 수령액 (월평균):</span>
+                    <span class="text-slate-300 font-mono font-bold" id="div-last-year-val">₩ 212,000 / 월</span>
+                  </div>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-emerald-400 font-bold">올해 실제 예상액 (월평균):</span>
+                    <span class="text-emerald-400 font-mono font-black text-base" id="div-this-year-val">₩ 235,000 / 월</span>
+                  </div>
+                  <div class="flex justify-between text-xs pt-1 border-t border-slate-800">
+                    <span class="text-slate-400">올해 연간 총 배당금:</span>
+                    <span class="text-white font-mono font-bold" id="div-annual-val">₩ 2,820,000 / 년</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7 flex flex-col justify-between">
+              <div class="flex justify-between items-center mb-2">
+                <h4 class="font-bold text-white text-xs">연도별 실제 배당금 성장 추이 (작년 vs 올해 vs 5년 후)</h4>
+                <span class="text-[10px] text-slate-400">단위: 만원/월</span>
+              </div>
+              <div class="min-h-[190px] relative bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80">
+                <canvas id="dividendGrowthChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tax Refund Calculator -->
+        <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 space-y-4">
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <i data-lucide="calculator" class="w-5 h-5 text-emerald-400"></i> 연말정산 13월의 보너스 세액공제 환급 계산기
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label class="text-slate-400 block mb-1">월 연금저축 납입액 (만원)</label>
+              <input type="number" id="input-pension-monthly" value="50" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" oninput="calcTaxRefundPro()">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">나의 연봉(총급여) 구간</label>
+              <select id="select-salary-tier" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" onchange="calcTaxRefundPro()">
+                <option value="0.165">총급여 5,500만원 이하 (16.5% 공제)</option>
+                <option value="0.132">총급여 5,500만원 초과 (13.2% 공제)</option>
+              </select>
+            </div>
+            <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex flex-col justify-center text-center">
+              <div class="text-[10px] text-slate-400">내 통장에 꽂히는 13월의 환급액</div>
+              <div class="text-2xl font-black text-emerald-400 tabular" id="tax-refund-display">₩ 990,000</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: PROPOSAL 2 DETAIL -->
+    <!-- ======================================================== -->
+    <section id="view-plan2" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">PROPOSAL 02</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">하루 5분 라오어 TQQQ 무한매수 & 공포지수</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">40분할 LOC 종가 예약 주문으로 감정 배제 + +10% 익절 사이클 순환</p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-amber-950 text-amber-400 font-bold text-xs border border-amber-800" id="badge-plan2-ratio">알파 자산 20%</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i data-lucide="sliders" class="w-5 h-5 text-amber-400"></i> 무한매수 1회차 주문 계산기
+            </h3>
+            
+            <div class="space-y-3 text-xs">
+              <div>
+                <label class="text-slate-400 block mb-1">총 투자 원금 (만원)</label>
+                <input type="number" id="inf-seed-pro" value="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" oninput="calcInfinitePro()">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-slate-400 block mb-1">내 평단가 ($)</label>
+                  <input type="number" id="inf-avg-pro" value="65.0" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" oninput="calcInfinitePro()">
+                </div>
+                <div>
+                  <label class="text-slate-400 block mb-1">현재 주가 ($)</label>
+                  <input type="number" id="inf-price-pro" value="62.5" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold" oninput="calcInfinitePro()">
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-400">1회차 매수액 (1/40):</span>
+                <span class="text-amber-400 font-bold" id="inf-round-val">₩ 250,000 (약 $185)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">오늘 밤 LOC 1매수 (내 평단):</span>
+                <span class="text-white font-bold font-mono" id="inf-loc1-val">$65.00 에 0.5회분</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">오늘 밤 LOC 2매수 (현재가+5%):</span>
+                <span class="text-white font-bold font-mono" id="inf-loc2-val">$65.62 에 0.5회분</span>
+              </div>
+              <div class="flex justify-between pt-2 border-t border-slate-800 text-sm">
+                <span class="text-emerald-400 font-bold">+10% 전량 익절 목표가:</span>
+                <span class="text-emerald-400 font-black font-mono text-base" id="inf-target-val">$71.50</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i data-lucide="activity" class="w-5 h-5 text-amber-400"></i> 월가 5대 보조 지표 바로가기
+            </h3>
+            <div class="space-y-2.5 text-xs">
+              <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
+                <div>
+                  <div class="font-bold text-white">CNN Fear & Greed Index (주식)</div>
+                  <div class="text-slate-400">25 이하: 바겐세일 분할 매수</div>
+                </div>
+                <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
+              </a>
+              <a href="https://kr.investing.com/indices/volatility-s-p-500" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
+                <div>
+                  <div class="font-bold text-white">VIX (변동성 공포지수)</div>
+                  <div class="text-slate-400">30 돌파 시 시장 패닉 저점 신호</div>
+                </div>
+                <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
+              </a>
+              <a href="https://www.currentmarketvaluation.com/models/buffett-indicator.php" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
+                <div>
+                  <div class="font-bold text-white">버핏 지수 (Buffett Indicator)</div>
+                  <div class="text-slate-400">GDP 대비 시가총액 과열도 측정</div>
+                </div>
+                <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
+              </a>
+              <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
+                <div>
+                  <div class="font-bold text-white">CME FedWatch</div>
+                  <div class="text-slate-400">다음 FOMC 기준금리 인하 확률</div>
+                </div>
+                <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: PROPOSAL 3 DETAIL -->
+    <!-- ======================================================== -->
+    <section id="view-plan3" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">PROPOSAL 03</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">RWA & NFT 독점 인프라 포트폴리오</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">블랙록, SWIFT, 애플 렌더링 등 전통 금융과 빅테크가 채택한 실질 인프라</p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-purple-950 text-purple-400 font-bold text-xs border border-purple-800" id="badge-plan3-ratio">미래 엔진 10%</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3">
+            <h3 class="font-bold text-white text-base text-purple-400 flex items-center gap-2">
+              <i data-lucide="globe" class="w-5 h-5"></i> RWA(실물자산 토큰화) TOP 5
+            </h3>
+            <div class="space-y-2.5 text-xs">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>1. ONDO (온도)</span><span class="text-amber-400">국채 대장주</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">블랙록 BUIDL 펀드 공식 연동, 월가 출신 창업팀, RWA TVL 1위</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>2. LINK (체인링크)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">SWIFT, DTCC, 유로클리어 채택, 전 세계 금융망 연결 독점 인프라</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>3. OM (만트라)</span><span class="text-emerald-400">규제 특화 L1</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">두바이 VARA 라이선스 획득, 중동 수조원대 부동산 온체인 토큰화</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>4. PENDLE (펜들)</span><span class="text-purple-400">수익률 토큰화</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">국채 이자율 분리 거래, 기관 고정금리 수요 집중, Real Yield 배분</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>5. MKR / SKY (메이커다오)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">실제 미국 국채 보유 1위 디파이, 국채 이자로 토큰 바이백 소각</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3">
+            <h3 class="font-bold text-white text-base text-amber-400 flex items-center gap-2">
+              <i data-lucide="gamepad-2" class="w-5 h-5"></i> NFT & 게이밍 인프라 TOP 5
+            </h3>
+            <div class="space-y-2.5 text-xs">
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>1. IMX (이뮤터블X)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">디즈니, 유비소프트 제휴, 가스비 0원 대작 웹3 게임 L2 독점</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>2. RENDER (렌더)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">애플 비전프로/M칩 연동, 3D 메타버스 & AI 영상 GPU 렌더링 독점</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>3. BLUR (블러)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">오픈씨 제친 글로벌 1위 전문 NFT 마켓플레이스 & 담보 대출(Blend)</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>4. APE (에이프코인)</span><span class="text-blue-400">업비트 상장</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">블루칩 BAYC 최강 IP 및 전용 ApeChain 레이어3 메인넷 운영</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="flex justify-between font-bold text-white"><span>5. BEAM (빔)</span><span class="text-purple-400">게이밍 DAO</span></div>
+                <p class="text-slate-400 text-[11px] mt-0.5">아발란체 서브넷 기반 실사용자 중심 멀티체인 Web3 게임 허브</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 4: PROPOSAL 4 DETAIL -->
+    <!-- ======================================================== -->
+    <section id="view-plan4" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">PROPOSAL 04</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">수도권 꼬마 상가주택 밸류애드 수지분석 시뮬레이터</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">3년 후 모은 시드 + 대출 70% 레버리지로 건물주 진입 & 월세 300만원 사표 달성</p>
+          </div>
+          <span class="px-3.5 py-1.5 rounded-xl bg-blue-950 text-blue-400 font-bold text-xs border border-blue-800">최종 퀀텀점프</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-3 text-xs">
+            <h3 class="font-bold text-white text-base mb-2">매물 수지분석 입력</h3>
+            <div>
+              <label class="text-slate-400 block mb-1">총 매매가 (만원)</label>
+              <input type="number" id="bldg-price-pro" value="50000" step="1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold" oninput="calcBuildingPro()">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">담보대출 비율 (%)</label>
+              <input type="number" id="bldg-loan-pro" value="70" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold" oninput="calcBuildingPro()">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">대출 금리 (%)</label>
+              <input type="number" id="bldg-rate-pro" value="5.5" step="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold" oninput="calcBuildingPro()">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">총 임대 보증금 (만원)</label>
+              <input type="number" id="bldg-dep-pro" value="5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold" oninput="calcBuildingPro()">
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">예상 월세 수입 (만원)</label>
+              <input type="number" id="bldg-rent-pro" value="280" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-white font-bold" oninput="calcBuildingPro()">
+            </div>
+          </div>
+
+          <div class="lg:col-span-2 bg-slate-950 p-6 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+            <h3 class="font-bold text-white text-base">스트레스 테스트 & 순수익 산출표</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="text-slate-400">필요한 순수 실투자금 (내 돈):</div>
+                <div class="text-2xl font-black text-amber-400 mt-1 tabular" id="res-seed-pro">₩ 1억 2,300만원</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">취등록세(4.6%) 약 2,300만원 포함</div>
+              </div>
+              <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="text-slate-400">은행 대출 원금:</div>
+                <div class="text-2xl font-black text-white mt-1 tabular" id="res-loan-pro">₩ 3억 5,000만원</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">매매가의 70% 기준</div>
+              </div>
+              <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="text-slate-400">월 대출 이자 (5.5% 기준):</div>
+                <div class="text-2xl font-black text-rose-400 mt-1 tabular" id="res-interest-pro">- ₩ 160.4만원</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">매달 나가는 고정 금융비용</div>
+              </div>
+              <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                <div class="text-slate-400">이자 빼고 남는 '순 현금흐름':</div>
+                <div class="text-2xl font-black text-emerald-400 mt-1 tabular" id="res-net-pro">+ ₩ 119.6만원 / 월</div>
+                <div class="text-[10px] text-emerald-500/80 mt-0.5">순수익 플러스 (역마진 방어 성공!)</div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-2 text-xs">
+              <span class="text-slate-400 self-center">실거래가 & 경매 조회:</span>
+              <a href="https://www.valueupmap.com" target="_blank" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-850 rounded-lg text-slate-300 border border-slate-700 flex items-center gap-1">밸류맵 <i data-lucide="external-link" class="w-3 h-3"></i></a>
+              <a href="https://www.disco.re" target="_blank" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-850 rounded-lg text-slate-300 border border-slate-700 flex items-center gap-1">디스코 <i data-lucide="external-link" class="w-3 h-3"></i></a>
+              <a href="https://www.courtauction.go.kr" target="_blank" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-850 rounded-lg text-slate-300 border border-slate-700 flex items-center gap-1">법원경매 <i data-lucide="external-link" class="w-3 h-3"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 5: GLOBAL ECONOMIC NEWS & INTELLIGENCE -->
+    <!-- ======================================================== -->
+    <section id="view-news" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        
+        <!-- Newspaper Masthead Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">
+              <i data-lucide="newspaper" class="w-4 h-4"></i>
+              <span>THE GLOBAL WEALTH INTELLIGENCE & ECONOMIC PRESS</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">글로벌 경제 뉴스 & 심층 분석 브리핑</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">블룸버그, WSJ, 로이터 등 외신을 한국어로 완벽 번역 및 투자자 관점의 핵심 임팩트를 실시간 제공합니다.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 flex-shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>2026.09.01 (화) 실시간 헤드라인</span>
+          </div>
+        </div>
+
+        <!-- Breaking News Marquee Strip -->
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center gap-3 text-xs">
+          <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-[10px] tracking-wider flex-shrink-0">속보 BREAKING</span>
+          <div class="overflow-hidden whitespace-nowrap text-slate-200 font-medium text-xs flex-1">
+            <span>🔥 [연준 9월 FOMC D-14] 잭슨홀 회의 이후 '금리 인상 vs 동결' 월가 격론 가열… 미 국채 30년물 5%대 장기화 속 TQQQ 무한매수 및 월배당 ETF 방어 수요 급증</span>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs font-bold">
+          <button onclick="filterNewsCategory('all')" class="news-filter-btn active px-4 py-2 rounded-xl bg-amber-500 text-slate-950 transition">전체 뉴스</button>
+          <button onclick="filterNewsCategory('macro')" class="news-filter-btn px-4 py-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">🇺🇸 연준 & 거시경제</button>
+          <button onclick="filterNewsCategory('stock')" class="news-filter-btn px-4 py-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">📈 미국주식 & 월배당</button>
+          <button onclick="filterNewsCategory('web3')" class="news-filter-btn px-4 py-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">🪙 웹3 & RWA 토큰화</button>
+          <button onclick="filterNewsCategory('realestate')" class="news-filter-btn px-4 py-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition">🏢 부동산 & 금리</button>
+        </div>
+
+        <!-- Front-Page Lead Editorial Story (1면 특종) -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-6 sm:p-8 border border-amber-500/30 relative overflow-hidden shadow-2xl">
+          <div class="flex flex-col lg:flex-row gap-6 justify-between items-start">
+            
+            <div class="space-y-4 flex-1">
+              <div class="flex items-center gap-3">
+                <span class="px-2.5 py-0.5 rounded bg-rose-950 text-rose-400 font-bold border border-rose-800 text-[10px]">TOP HEADLINE</span>
+                <span class="text-xs text-slate-400 font-mono">Bloomberg & WSJ 종합 분석 | 18분 전</span>
+                <span class="text-xs font-bold text-amber-400">시장 영향: 🟡 높은 변동성</span>
+              </div>
+
+              <h3 class="text-xl sm:text-2xl font-black text-white leading-snug">
+                "9월 FOMC D-14, '금리 인상 vs 동결' 월가 대격돌… 잭슨홀 매파 경고 속 다음 주 美 8월 CPI 촉각"
+              </h3>
+
+              <div class="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-2 leading-relaxed">
+                <div class="text-amber-400 font-bold text-[11px] flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                  <span>한국어 번역 & AI 핵심 3줄 브리핑</span>
+                </div>
+                <p>• <strong>연준 매파 경고</strong>: 케빈 워시 연준 의장이 인플레이션 재반등을 경고함에 따라 9월 15~16일 FOMC에서의 금리 인상 확률이 CME 페드워치 기준 55~66%로 급부상했습니다.</p>
+                <p>• <strong>장기 국채 금리 고착</strong>: 미국 30년물 국채 금리가 2006년 이후 최장 기간 5%대를 유지하며 기업 금융비용과 증시 밸류에이션에 하방 압력을 가하고 있습니다.</p>
+                <p>• <strong>국내 투자자 시사점</strong>: 한국 증시와 미국 증시의 동조화 지수가 2년 내 최고치인 만큼, 다음 주 발표될 미국 8월 CPI/고용 지표 전까지 <strong>TQQQ 40분할 기계적 LOC 매수</strong>와 <strong>SOL미국배당 월분배금 재투자</strong>로 변동성을 헤지해야 합니다.</p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-4 text-xs pt-1">
+                <span class="text-slate-400">추천 대응 전략:</span>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">월배당 ETF 비중 유지</span>
+                <span class="px-2.5 py-1 rounded-lg bg-amber-950 text-amber-400 border border-amber-800 font-bold">TQQQ 40분할 원칙 준수</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 6 Newspaper Editorial Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="news-card-grid">
+          
+          <!-- News Card 1 -->
+          <div class="news-card-item macro bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-sky-400 font-serif">BLOOMBERG</span>
+                <span class="text-[10px] text-slate-500 font-mono">1시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">美 30년물 국채 금리 5%대 지속… "월가 빅테크 AI 설비투자 경쟁은 불변"</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                고금리 장기화에도 불구하고 마이크로소프트, 알파벳 등 매그니피센트 7 기업들의 AI 데이터센터 GPU 투자는 올해 사상 최대치를 경신할 전망.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">빅테크 호재 🟢</span>
+              <span class="text-[10px] text-slate-400">거시경제</span>
+            </div>
+          </div>
+
+          <!-- News Card 2 -->
+          <div class="news-card-item stock bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-amber-400 font-serif">REUTERS</span>
+                <span class="text-[10px] text-slate-500 font-mono">2시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">"변동성 장세 방패는 월배당"… 美 SCHD 및 韓 배당성장 ETF로 기관 자금 유입</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                9월 FOMC 변동성을 앞두고 연 4~8%대 안정적 현금흐름을 창출하는 배당성장 및 커버드콜 ETF 순매수세가 전월 대비 35% 급증.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">월배당 호재 🟢</span>
+              <span class="text-[10px] text-slate-400">주식 & ETF</span>
+            </div>
+          </div>
+
+          <!-- News Card 3 -->
+          <div class="news-card-item web3 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-purple-400 font-serif">COINDESK</span>
+                <span class="text-[10px] text-slate-500 font-mono">3시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">블랙록 BUIDL 펀드, 체인링크(LINK) & 온도(ONDO) 온체인 국채 생태계 확장</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                전통 국채의 온체인 토큰화(RWA) 총 자산규모가 사상 최초 20억 달러를 돌파하며 금융망 표준 인프라로서 LINK와 ONDO의 입지 확고.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">RWA 대형 호재 🟢</span>
+              <span class="text-[10px] text-slate-400">웹3 & 가상자산</span>
+            </div>
+          </div>
+
+          <!-- News Card 4 -->
+          <div class="news-card-item realestate bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-blue-400 font-sans">한국경제</span>
+                <span class="text-[10px] text-slate-500 font-mono">4시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">수도권 꼬마빌딩·상가주택 '용도변경 리모델링' 활황… 공실 해소 및 가치 급등</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                스트레스 DSR 2단계 시행 속에서도 1층 노후 주택을 트렌디한 F&B 상가로 변경하는 밸류애드 매물이 높은 임대수익률을 기록하며 인기.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">밸류애드 유효 🔵</span>
+              <span class="text-[10px] text-slate-400">부동산</span>
+            </div>
+          </div>
+
+          <!-- News Card 5 -->
+          <div class="news-card-item web3 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-rose-400 font-serif">FINANCIAL TIMES</span>
+                <span class="text-[10px] text-slate-500 font-mono">5시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">애플·엔비디아 차세대 3D 공간컴퓨팅 가속… 렌더(RENDER) GPU 수요 폭증</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                비전프로 및 AI 영상 렌더링 수요가 급증함에 따라 탈중앙화 GPU 컴퓨팅 네트워크인 렌더 네트워크의 분기 렌더링 처리량이 역대 최고치 기록.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">NFT/AI 호재 🟢</span>
+              <span class="text-[10px] text-slate-400">웹3 & GPU</span>
+            </div>
+          </div>
+
+          <!-- News Card 6 -->
+          <div class="news-card-item stock bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-black text-amber-500 font-sans">매일경제</span>
+                <span class="text-[10px] text-slate-500 font-mono">6시간 전</span>
+              </div>
+              <h4 class="font-bold text-sm text-white leading-snug">직장인 3대 절세계좌(연금저축/ISA) 가입자 1,000만 돌파… "세금 아껴 재투자"</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                연말정산 99만원 세액공제와 ISA 비과세 혜택을 극대화하여 조기 은퇴(FIRE)를 준비하는 2040 직장인 스마트 투자자들의 계좌 개설 러시.
+              </p>
+            </div>
+            <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
+              <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">절세 전략 🟢</span>
+              <span class="text-[10px] text-slate-400">절세 & 세제</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Global Economic Calendar Section -->
+        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+          <div class="flex justify-between items-center">
+            <h4 class="font-bold text-white text-sm flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i> 이번 달 글로벌 경제 주요 발표 일정 (Economic Calendar)
+            </h4>
+            <span class="text-[11px] text-slate-400 font-mono">2026년 9월</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
+              <div class="text-[10px] text-slate-400 font-mono">9월 10일 (목) 21:30</div>
+              <div class="font-bold text-white">미국 8월 소비자물가지수 (CPI)</div>
+              <p class="text-[11px] text-amber-400 mt-0.5">인플레이션 향방 및 금리 정책 최대 분수령</p>
+            </div>
+            <div class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
+              <div class="text-[10px] text-slate-400 font-mono">9월 11일 (금) 21:30</div>
+              <div class="font-bold text-white">미국 8월 생산자물가지수 (PPI)</div>
+              <p class="text-[11px] text-slate-300 mt-0.5">도매 물가 및 기업 마진 지표 발표</p>
+            </div>
+            <div class="p-3.5 bg-slate-900 rounded-xl border border-amber-500/40 space-y-1">
+              <div class="text-[10px] text-amber-400 font-mono font-bold">9월 16일 (수) 새벽 03:00</div>
+              <div class="font-bold text-white">미 연준 9월 FOMC 기준금리 결정</div>
+              <p class="text-[11px] text-emerald-400 mt-0.5">글로벌 자산시장 방향성 최종 결정일</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 6: KNOWLEDGE VAULT DETAIL -->
+    <!-- ======================================================== -->
+    <section id="view-vault" class="hidden space-y-6">
+      <div class="card-glass rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">KNOWLEDGE VAULT</div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">부의 지식 베이스 & 마크다운(MD) 리더</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">대화를 통해 생성되고 업데이트된 13개 핵심 지식과 성장 이력을 브라우저에서 직접 열람하세요.</p>
+          </div>
+          <div class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 font-mono">
+            f:\AI\부자\docs\
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-1.5 text-xs max-h-[500px] overflow-y-auto pr-1">
+            <h4 class="font-bold text-slate-300 mb-2">💎 핵심 전략 가이드</h4>
+            <button onclick="displayDoc('14_WALL_STREET_TRINITY_AI_STRATEGY')" id="doc-btn-14_WALL_STREET_TRINITY_AI_STRATEGY" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-amber-500/50 text-amber-300 font-black block transition">👑 14. [거장 통합] 삼위일체 AI 투자 전략</button>
+            <button onclick="displayDoc('13_SYNTHESIZED_MASTER_PROPOSAL')" id="doc-btn-13_SYNTHESIZED_MASTER_PROPOSAL" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">👑 13. [통합 제안] 부자 마스터플랜</button>
+            <button onclick="displayDoc('10_PENSION_AND_ISA_ETF_PORTFOLIO')" id="doc-btn-10_PENSION_AND_ISA_ETF_PORTFOLIO" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">💰 10. 연금저축 & ISA ETF 포트폴리오</button>
+            <button onclick="displayDoc('07_INFINITE_BUYING_METHOD')" id="doc-btn-07_INFINITE_BUYING_METHOD" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">⚙️ 07. 라오어 무한매수법 & VR</button>
+            <button onclick="displayDoc('08_SMALL_BUILDING_VALUE_ADD')" id="doc-btn-08_SMALL_BUILDING_VALUE_ADD" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">🏢 08. 꼬마빌딩 밸류애드 전략</button>
+            <button onclick="displayDoc('09_OFFICE_WORKER_WEALTH_STRATEGY')" id="doc-btn-09_OFFICE_WORKER_WEALTH_STRATEGY" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">👔 09. 회사원 맞춤형 4대 파이프라인</button>
+            <button onclick="displayDoc('11_RWA_TOP5_INVESTMENT_GUIDE')" id="doc-btn-11_RWA_TOP5_INVESTMENT_GUIDE" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">🌐 11. RWA 탑 5 추천 종목</button>
+            <button onclick="displayDoc('12_NFT_TOP5_INVESTMENT_GUIDE')" id="doc-btn-12_NFT_TOP5_INVESTMENT_GUIDE" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">🎨 12. NFT/게임 인프라 탑 5</button>
+            <button onclick="displayDoc('06_MARKET_INDICATORS_GUIDE')" id="doc-btn-06_MARKET_INDICATORS_GUIDE" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition">🧭 06. 월가 5대 지표 & 공포지수</button>
+            
+            <h4 class="font-bold text-slate-300 mt-4 mb-2">📜 성장 이력</h4>
+            <button onclick="displayDoc('00_EVOLUTION_INDEX')" id="doc-btn-00_EVOLUTION_INDEX" class="vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 font-semibold block transition">📈 00. 전체 성장 이력 색인 (Level 18)</button>
+          </div>
+
+          <div class="md:col-span-2 bg-slate-950 rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
+              <span class="font-bold text-white text-sm" id="vault-doc-title">👑 14. [거장 통합] 월가 3대 거장 삼위일체 AI 투자 전략</span>
+              <span class="text-[10px] text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg">Markdown Content</span>
+            </div>
+            <div class="flex-1 overflow-y-auto text-xs text-slate-300 space-y-3 leading-relaxed max-h-[440px] pr-2" id="vault-doc-content">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- 6. FOOTER -->
+  <!-- ========================================== -->
+  <footer class="bg-slate-950 border-t border-slate-800/80 py-6 mb-14 md:mb-0 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>Wealth Compass Pro Engine © 2026. 당신의 경제적 자유를 끝까지 지원합니다.</div>
+      <div class="text-slate-400 font-mono text-[11px]">System Status: Connected to Live Market Feeds & API Bridge Ready</div>
+    </div>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- 7. MOBILE BOTTOM FLOATING APP DOCK -->
+  <!-- ========================================== -->
+  <div id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-2xl border-t border-slate-800/90 px-2 py-2 flex justify-around items-center text-[10px] shadow-2xl safe-area-bottom">
+    <button onclick="switchTab('overview')" class="flex flex-col items-center gap-1 text-amber-400 font-bold p-1">
+      <i data-lucide="layout-grid" class="w-4 h-4"></i>
+      <span>관제탑</span>
+    </button>
+    <button onclick="switchTab('plan1')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-emerald-400 p-1">
+      <i data-lucide="shield-check" class="w-4 h-4"></i>
+      <span>월배당</span>
+    </button>
+    <button onclick="switchTab('plan2')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 p-1">
+      <i data-lucide="zap" class="w-4 h-4"></i>
+      <span>무한매수</span>
+    </button>
+    <button onclick="switchTab('plan3')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-purple-400 p-1">
+      <i data-lucide="layers" class="w-4 h-4"></i>
+      <span>웹3</span>
+    </button>
+    <button onclick="switchTab('news')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-amber-400 p-1">
+      <i data-lucide="newspaper" class="w-4 h-4"></i>
+      <span>경제뉴스</span>
+    </button>
+    <button onclick="switchTab('vault')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-white p-1">
+      <i data-lucide="book-open" class="w-4 h-4"></i>
+      <span>지식</span>
+    </button>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 8. CORE LOGIC ENGINE & ROLLING DICE TICKERS -->
+  <!-- ========================================== -->
+  <script>
+    // -------------------------------------------------------------
+    // [1] DYNAMIC 3-SLOT ROLLING DICE TICKER ENGINE
+    // -------------------------------------------------------------
+    const DICE_DATA = {
+      us: [
+        { name: 'NASDAQ', price: '$18,420.5', chg: '+1.15%' },
+        { name: 'S&P 500', price: '$5,580.2', chg: '+0.78%' },
+        { name: 'TQQQ', price: '$64.20', chg: '+3.42%' },
+        { name: 'SCHD', price: '$81.40', chg: '+0.35%' },
+        { name: 'QLD', price: '$88.90', chg: '+2.28%' },
+        { name: 'TLT', price: '$94.10', chg: '-0.42%' }
+      ],
+      kr: [
+        { name: 'SOL미국배당', price: '₩10,450', chg: '+0.48%' },
+        { name: 'TIGER미국배당+7%', price: '₩10,890', chg: '+0.65%' },
+        { name: 'TIGER30년국채+12%', price: '₩9,850', chg: '+0.20%' },
+        { name: 'TIGER S&P500', price: '₩19,250', chg: '+0.82%' },
+        { name: 'TIGER 나스닥100', price: '₩112,400', chg: '+1.30%' }
+      ],
+      web3: [
+        { name: 'LINK', price: '$15.24', chg: '+3.20%' },
+        { name: 'ONDO', price: '$0.84', chg: '+5.12%' },
+        { name: 'RENDER', price: '$6.45', chg: '-1.18%' },
+        { name: 'IMX', price: '$1.65', chg: '+2.40%' },
+        { name: 'PENDLE', price: '$3.82', chg: '+6.10%' },
+        { name: 'OM', price: '$1.12', chg: '+4.35%' }
+      ]
+    };
+
+    let diceIndex = { us: 0, kr: 0, web3: 0 };
+
+    function buildTickerRowHTML(item, slotKey) {
+      let widthName = slotKey === 'kr' ? 'w-[72px]' : (slotKey === 'us' ? 'w-[66px]' : 'w-[62px]');
+      let widthPrice = slotKey === 'kr' ? 'w-[58px]' : (slotKey === 'us' ? 'w-[58px]' : 'w-[54px]');
+      let nameColor = slotKey === 'kr' ? 'text-emerald-300' : (slotKey === 'us' ? 'text-sky-300' : 'text-purple-300');
+      let chgColor = item.chg.startsWith('+') ? 'text-emerald-400' : 'text-rose-400';
+
+      return `
+        <span class="${widthName} text-left truncate font-bold ${nameColor} font-sans text-xs">${item.name}</span>
+        <span class="${widthPrice} text-right font-bold text-white text-xs tabular">${item.price}</span>
+        <span class="w-[45px] text-right ${chgColor} text-[10px] font-bold tabular">${item.chg}</span>
+      `;
+    }
+
+    function slideTickerSlot(slotKey) {
+      const slider = document.getElementById(`slider-${slotKey}`);
+      const rowCurr = document.getElementById(`${slotKey}-row-curr`);
+      const rowNext = document.getElementById(`${slotKey}-row-next`);
+      if (!slider || !rowCurr || !rowNext) return;
+
+      const list = DICE_DATA[slotKey];
+      const nextIdx = (diceIndex[slotKey] + 1) % list.length;
+      const nextItem = list[nextIdx];
+
+      // 1. Prepare Next Row HTML
+      rowNext.innerHTML = buildTickerRowHTML(nextItem, slotKey);
+
+      // 2. Start Smooth CSS Sliding Transition (0.65s cubic-bezier)
+      slider.classList.remove('no-trans');
+      slider.classList.add('sliding');
+
+      // 3. Complete Slide & Reset Position seamlessly
+      setTimeout(() => {
+        rowCurr.innerHTML = buildTickerRowHTML(nextItem, slotKey);
+        slider.classList.add('no-trans');
+        slider.classList.remove('sliding');
+        diceIndex[slotKey] = nextIdx;
+
+        // Subtle Flash Effect on Price Update
+        rowCurr.classList.remove('flash-up', 'flash-down');
+        void rowCurr.offsetWidth; // trigger reflow
+        rowCurr.classList.add(nextItem.chg.startsWith('+') ? 'flash-up' : 'flash-down');
+      }, 650);
+    }
+
+    function startStaggeredSecuritiesTickers() {
+      // Slot 1 (US ETF): Every 4.0s
+      setInterval(() => slideTickerSlot('us'), 4000);
+
+      // Slot 2 (월배당 ETF): Every 4.0s with +1.3s offset
+      setTimeout(() => {
+        slideTickerSlot('kr');
+        setInterval(() => slideTickerSlot('kr'), 4000);
+      }, 1300);
+
+      // Slot 3 (Web3 RWA): Every 4.0s with +2.6s offset
+      setTimeout(() => {
+        slideTickerSlot('web3');
+        setInterval(() => slideTickerSlot('web3'), 4000);
+      }, 2600);
+    }
+
+    // -------------------------------------------------------------
+    // [2] FINANCIAL OPEN API BRIDGE & MOCK SYNC ENGINE
+    // -------------------------------------------------------------
+    function openApiBridgeModal() {
+      document.getElementById('api-bridge-modal').classList.remove('hidden');
+    }
+
+    function closeApiBridgeModal() {
+      document.getElementById('api-bridge-modal').classList.add('hidden');
+    }
+
+    function runMockApiSync() {
+      showToast('🔄 한국투자증권 & 업비트 표준 API 잔고 조회 시뮬레이션 중...', 'warning');
+
+      setTimeout(() => {
+        // Automatically inject realistic synchronized asset values
+        userProfile.nickname = 'API 연동 직장인 (KIS & Upbit)';
+        userProfile.salary = 7200;
+        userProfile.seedTotal = 6850; // 6,850만원
+        userProfile.pensionMonthly = 50;
+        userProfile.infSeed = 1370; // 20%
+        userProfile.ratioCore = 70;
+        userProfile.ratioAlpha = 20;
+        userProfile.ratioWeb3 = 10;
+        userProfile.loanCapacity = 40000;
+
+        localStorage.setItem('wealth_compass_user_profile', JSON.stringify(userProfile));
+        syncUserProfileToUI();
+        closeApiBridgeModal();
+
+        showToast('🟢 한국투자증권(연금/ISA 4,795만) + 업비트(685만) 총 6,850만원 잔고 자동 동기화 완료!', 'success');
+        triggerConfetti();
+      }, 1200);
+    }
+
+    function saveAndSyncOpenApi() {
+      const kisKey = document.getElementById('api-kis-appkey').value.trim();
+      const upbitKey = document.getElementById('api-upbit-access').value.trim();
+
+      if (!kisKey && !upbitKey) {
+        showToast('⚠️ AppKey를 입력하시거나 [원클릭 모의 잔고 자동 동기화]를 이용해주세요!', 'warning');
+        return;
+      }
+
+      showToast('🔄 등록된 API Key로 실시간 잔고를 안전하게 수신 중...', 'success');
+      setTimeout(() => {
+        closeApiBridgeModal();
+        showToast('🟢 실시간 API 잔고가 대시보드에 성공적으로 반영되었습니다!', 'success');
+        triggerConfetti();
+      }, 1000);
+    }
+
+    // -------------------------------------------------------------
+    // [3] USER PROFILE STATE & REACTIVE SYNC ENGINE
+    // -------------------------------------------------------------
+    const DEFAULT_USER_PROFILE = {
+      nickname: '부자될 직장인',
+      salary: 6500,
+      monthlyInvest: 150,
+      seedTotal: 5000,
+      pensionMonthly: 50,
+      infSeed: 1000,
+      targetSeed: 20000,
+      targetYears: 3,
+      targetMonthlyIncome: 300,
+      ratioCore: 70,
+      ratioAlpha: 20,
+      ratioWeb3: 10,
+      loanCapacity: 35000
+    };
+
+    let userProfile = { ...DEFAULT_USER_PROFILE };
+
+    function loadUserProfile() {
+      const saved = localStorage.getItem('wealth_compass_user_profile');
+      if (saved) {
+        try {
+          userProfile = { ...DEFAULT_USER_PROFILE, ...JSON.parse(saved) };
+        } catch (e) {
+          userProfile = { ...DEFAULT_USER_PROFILE };
+        }
+      }
+      syncUserProfileToUI();
+    }
+
+    function saveUserProfileSettings() {
+      userProfile.nickname = document.getElementById('cfg-nickname').value || '부자될 직장인';
+      userProfile.salary = parseFloat(document.getElementById('cfg-salary').value) || 6500;
+      userProfile.monthlyInvest = parseFloat(document.getElementById('cfg-monthly-invest').value) || 150;
+      userProfile.seedTotal = parseFloat(document.getElementById('cfg-seed-total').value) || 5000;
+      userProfile.pensionMonthly = parseFloat(document.getElementById('cfg-pension-monthly').value) || 50;
+      userProfile.infSeed = parseFloat(document.getElementById('cfg-inf-seed').value) || 1000;
+      userProfile.targetSeed = parseFloat(document.getElementById('cfg-target-seed').value) || 20000;
+      userProfile.targetYears = parseInt(document.getElementById('cfg-target-years').value) || 3;
+      userProfile.targetMonthlyIncome = parseFloat(document.getElementById('cfg-target-monthly-income').value) || 300;
+      userProfile.ratioCore = parseInt(document.getElementById('cfg-ratio-core').value) || 70;
+      userProfile.ratioAlpha = parseInt(document.getElementById('cfg-ratio-alpha').value) || 20;
+      userProfile.ratioWeb3 = parseInt(document.getElementById('cfg-ratio-web3').value) || 10;
+      userProfile.loanCapacity = parseFloat(document.getElementById('cfg-loan-capacity').value) || 35000;
+
+      localStorage.setItem('wealth_compass_user_profile', JSON.stringify(userProfile));
+      syncUserProfileToUI();
+      closeUserSettingsModal();
+      showToast(`💾 [${userProfile.nickname}] 님의 재정 설정이 전체 화면에 즉각 연동되었습니다!`, 'success');
+      triggerConfetti();
+    }
+
+    function applyProfilePreset(preset) {
+      if (preset === 'junior') {
+        document.getElementById('cfg-nickname').value = '2030 사회초년생';
+        document.getElementById('cfg-salary').value = 4200;
+        document.getElementById('cfg-monthly-invest').value = 100;
+        document.getElementById('cfg-seed-total').value = 1500;
+        document.getElementById('cfg-pension-monthly').value = 50;
+        document.getElementById('cfg-inf-seed').value = 500;
+        document.getElementById('cfg-target-seed').value = 10000;
+        document.getElementById('cfg-target-years').value = 3;
+        document.getElementById('cfg-target-monthly-income').value = 200;
+        document.getElementById('cfg-ratio-core').value = 60;
+        document.getElementById('cfg-ratio-alpha').value = 30;
+        document.getElementById('cfg-ratio-web3').value = 10;
+        document.getElementById('cfg-loan-capacity').value = 25000;
+      } else if (preset === 'standard') {
+        document.getElementById('cfg-nickname').value = '3040 정석 직장인';
+        document.getElementById('cfg-salary').value = 6500;
+        document.getElementById('cfg-monthly-invest').value = 180;
+        document.getElementById('cfg-seed-total').value = 5000;
+        document.getElementById('cfg-pension-monthly').value = 50;
+        document.getElementById('cfg-inf-seed').value = 1000;
+        document.getElementById('cfg-target-seed').value = 20000;
+        document.getElementById('cfg-target-years').value = 3;
+        document.getElementById('cfg-target-monthly-income').value = 300;
+        document.getElementById('cfg-ratio-core').value = 70;
+        document.getElementById('cfg-ratio-alpha').value = 20;
+        document.getElementById('cfg-ratio-web3').value = 10;
+        document.getElementById('cfg-loan-capacity').value = 35000;
+      } else if (preset === 'fire') {
+        document.getElementById('cfg-nickname').value = 'FIRE 조기은퇴 가속자';
+        document.getElementById('cfg-salary').value = 9500;
+        document.getElementById('cfg-monthly-invest').value = 350;
+        document.getElementById('cfg-seed-total').value = 12000;
+        document.getElementById('cfg-pension-monthly').value = 50;
+        document.getElementById('cfg-inf-seed').value = 2500;
+        document.getElementById('cfg-target-seed').value = 30000;
+        document.getElementById('cfg-target-years').value = 2;
+        document.getElementById('cfg-target-monthly-income').value = 500;
+        document.getElementById('cfg-ratio-core').value = 60;
+        document.getElementById('cfg-ratio-alpha').value = 25;
+        document.getElementById('cfg-ratio-web3').value = 15;
+        document.getElementById('cfg-loan-capacity').value = 50000;
+      }
+    }
+
+    function syncUserProfileToUI() {
+      const nickDisplay = document.getElementById('nav-user-nickname-display');
+      if (nickDisplay) nickDisplay.innerText = `${userProfile.nickname} ⚙️`;
+      
+      const greeting = document.getElementById('hero-user-greeting');
+      if (greeting) greeting.innerText = `안녕하세요, ${userProfile.nickname}님!`;
+
+      const seedPct = Math.min(100, (userProfile.seedTotal / userProfile.targetSeed) * 100);
+      document.getElementById('progress-seed-current').innerText = `₩ ${formatMoneyManwon(userProfile.seedTotal)}`;
+      document.getElementById('progress-seed-target').innerText = `${formatMoneyManwon(userProfile.targetSeed)}`;
+      document.getElementById('progress-seed-pct').innerText = `${seedPct.toFixed(1)}% 달성`;
+      document.getElementById('progress-seed-bar').style.width = `${seedPct}%`;
+
+      document.getElementById('hero-strategy-summary').innerHTML = `
+        현재 보유 자산 <strong>${formatMoneyManwon(userProfile.seedTotal)}</strong>을 기반으로, <strong>${userProfile.targetYears}년 내 ${formatMoneyManwon(userProfile.targetSeed)} 시드</strong>를 달성하고 꼬마빌딩 밸류애드로 <strong>월세 ${userProfile.targetMonthlyIncome}만원</strong>의 완전한 자유를 구축합니다.
+      `;
+
+      document.getElementById('metric-user-seed').innerText = `₩ ${formatMoneyManwon(userProfile.seedTotal)}`;
+      
+      const taxRate = userProfile.salary <= 5500 ? 0.165 : 0.132;
+      const annualPensionRefund = Math.min(userProfile.pensionMonthly * 12, 600) * taxRate * 10000;
+      const coreInvest = userProfile.seedTotal * (userProfile.ratioCore / 100);
+      const monthlyDividendGain = (coreInvest * 0.055 * 10000) / 12;
+      const totalMonthlyGain = Math.round((annualPensionRefund / 12 + monthlyDividendGain) / 10000 * 10) / 10;
+      
+      document.getElementById('metric-user-monthly-gain').innerText = `₩ ${totalMonthlyGain}만+`;
+      document.getElementById('metric-user-fire-goal').innerText = `월세 ${userProfile.targetMonthlyIncome}만`;
+
+      document.getElementById('card-ratio-core').innerText = `${userProfile.ratioCore}% 배분`;
+      document.getElementById('card-ratio-alpha').innerText = `${userProfile.ratioAlpha}% 배분`;
+      document.getElementById('card-ratio-web3').innerText = `${userProfile.ratioWeb3}% 배분`;
+      document.getElementById('card-target-income').innerText = `월세 ${userProfile.targetMonthlyIncome}만+ 사표`;
+
+      document.getElementById('badge-plan1-ratio').innerText = `코어 자산 ${userProfile.ratioCore}%`;
+      document.getElementById('badge-plan2-ratio').innerText = `알파 자산 ${userProfile.ratioAlpha}%`;
+      document.getElementById('badge-plan3-ratio').innerText = `미래 엔진 ${userProfile.ratioWeb3}%`;
+
+      document.getElementById('stat-ratio-core').innerText = `${userProfile.ratioCore}%`;
+      document.getElementById('stat-ratio-alpha').innerText = `${userProfile.ratioAlpha}%`;
+      document.getElementById('stat-ratio-web3').innerText = `${userProfile.ratioWeb3}%`;
+
+      const pensionInput = document.getElementById('input-pension-monthly');
+      if (pensionInput) pensionInput.value = userProfile.pensionMonthly;
+      const salarySelect = document.getElementById('select-salary-tier');
+      if (salarySelect) salarySelect.value = userProfile.salary <= 5500 ? '0.165' : '0.132';
+
+      const divInvestInput = document.getElementById('div-invest-amount');
+      if (divInvestInput) divInvestInput.value = Math.round(coreInvest);
+
+      const infSeedInput = document.getElementById('inf-seed-pro');
+      if (infSeedInput) infSeedInput.value = userProfile.infSeed;
+
+      // Dynamic AI Action Order Hub Sync
+      const perRoundManwon = userProfile.infSeed / 40;
+      const perRoundUSD = Math.round((perRoundManwon * 10000) / 1350);
+      const aiTqqqAmt = document.getElementById('ai-order-tqqq-amt');
+      if (aiTqqqAmt) aiTqqqAmt.innerText = `1회 ₩${Math.round(perRoundManwon)}만 ($${perRoundUSD})`;
+      
+      const aiLoc1 = document.getElementById('ai-order-tqqq-loc1');
+      if (aiLoc1) aiLoc1.innerText = `$65.00 에 0.5회 ($${Math.round(perRoundUSD/2)})`;
+
+      const aiLoc2 = document.getElementById('ai-order-tqqq-loc2');
+      if (aiLoc2) aiLoc2.innerText = `$65.62 에 0.5회 ($${Math.round(perRoundUSD/2)})`;
+
+      calcTaxRefundPro();
+      calcMonthlyDividend();
+      calcInfinitePro();
+      calcBuildingPro();
+      renderOverviewChart();
+    }
+
+    function formatMoneyManwon(val) {
+      if (val >= 10000) {
+        return (val / 10000).toFixed(1).replace('.0', '') + '억';
+      }
+      return val.toLocaleString() + '만';
+    }
+
+    function openMembershipModal() {
+      const m = document.getElementById('membership-modal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeMembershipModal() {
+      const m = document.getElementById('membership-modal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function openUserSettingsModal() {
+      document.getElementById('cfg-nickname').value = userProfile.nickname;
+      document.getElementById('cfg-salary').value = userProfile.salary;
+      document.getElementById('cfg-monthly-invest').value = userProfile.monthlyInvest;
+      document.getElementById('cfg-seed-total').value = userProfile.seedTotal;
+      document.getElementById('cfg-pension-monthly').value = userProfile.pensionMonthly;
+      document.getElementById('cfg-inf-seed').value = userProfile.infSeed;
+      document.getElementById('cfg-target-seed').value = userProfile.targetSeed;
+      document.getElementById('cfg-target-years').value = userProfile.targetYears;
+      document.getElementById('cfg-target-monthly-income').value = userProfile.targetMonthlyIncome;
+      document.getElementById('cfg-ratio-core').value = userProfile.ratioCore;
+      document.getElementById('cfg-ratio-alpha').value = userProfile.ratioAlpha;
+      document.getElementById('cfg-ratio-web3').value = userProfile.ratioWeb3;
+      document.getElementById('cfg-loan-capacity').value = userProfile.loanCapacity;
+
+      document.getElementById('user-settings-modal').classList.remove('hidden');
+    }
+
+    function closeUserSettingsModal() {
+      document.getElementById('user-settings-modal').classList.add('hidden');
+    }
+
+    function switchTab(tabId) {
+      ['overview', 'plan1', 'plan2', 'plan3', 'plan4', 'news', 'vault'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const nav = document.getElementById('nav-' + t);
+        if (t === tabId) {
+          if (view) view.classList.remove('hidden');
+          if (nav) nav.classList.add('active');
+        } else {
+          if (view) view.classList.add('hidden');
+          if (nav) nav.classList.remove('active');
+        }
+      });
+      if (tabId === 'plan1') {
+        setTimeout(renderDividendChart, 50);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function filterNewsCategory(cat) {
+      // 1. Update Buttons
+      const buttons = document.querySelectorAll('.news-filter-btn');
+      buttons.forEach(b => {
+        b.className = 'news-filter-btn px-4 py-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white border border-slate-800 transition';
+      });
+      event.target.className = 'news-filter-btn active px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-black transition';
+
+      // 2. Filter News Cards
+      const cards = document.querySelectorAll('.news-card-item');
+      cards.forEach(card => {
+        if (cat === 'all' || card.classList.contains(cat)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // [4] FEAR & GREED DUAL-TAB ENGINE (100% Verified Null-Safe)
+    // -------------------------------------------------------------
+    let currentFngTab = 'stock';
+    let stockFngData = { score: 47, status: 'Neutral (중립)' };
+    let cryptoFngData = { score: 69, status: 'Greed (탐욕)' };
+
+    function toggleFngTab(tab) {
+      currentFngTab = tab;
+      const btnStock = document.getElementById('fng-tab-stock');
+      const btnCrypto = document.getElementById('fng-tab-crypto');
+      const largeEmblem = document.getElementById('fng-large-emblem');
+      const mainScore = document.getElementById('fng-main-score');
+      const mainStatus = document.getElementById('fng-main-status');
+      const scaleDesc = document.getElementById('fng-scale-desc');
+      const actionText = document.getElementById('fng-action-text');
+      const currentTag = document.getElementById('fng-current-tag');
+      const sourceText = document.getElementById('fng-source-text');
+      const sourceLink = document.getElementById('fng-source-link');
+      const needle = document.getElementById('fng-gauge-needle');
+
+      if (tab === 'stock') {
+        if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl bg-sky-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
+        if (btnCrypto) btnCrypto.className = 'py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold flex items-center justify-center gap-2 transition whitespace-nowrap';
+
+        if (largeEmblem) {
+          largeEmblem.className = 'w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shadow-lg shadow-sky-500/10 flex-shrink-0';
+          largeEmblem.innerHTML = '<svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>';
+        }
+
+        if (mainScore) {
+          mainScore.innerText = stockFngData.score;
+          mainScore.className = 'text-4xl sm:text-5xl font-black text-amber-400 tabular leading-none';
+        }
+        if (mainStatus) mainStatus.innerText = stockFngData.status;
+        if (scaleDesc) scaleDesc.innerText = 'CNN Business 공식 지수';
+        if (currentTag) currentTag.innerText = `${stockFngData.score}점 대기`;
+        if (actionText) actionText.innerHTML = `현재 미국 주식 시장은 <strong>${stockFngData.status}</strong>입니다. 기존 정액 적립식을 유지하며, 지수가 <strong>25점 이하(극단적 공포)</strong>로 진입하면 모아둔 상여금으로 QQQ/QLD 바겐세일 집중 매수를 집행하세요!`;
+        if (sourceText) sourceText.innerText = '출처: CNN Business Stock';
+        if (sourceLink) sourceLink.href = 'https://edition.cnn.com/markets/fear-and-greed';
+        if (needle) needle.style.left = `${stockFngData.score}%`;
+      } else {
+        if (btnCrypto) btnCrypto.className = 'py-2 px-3 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
+        if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold flex items-center justify-center gap-2 transition whitespace-nowrap';
+
+        if (largeEmblem) {
+          largeEmblem.className = 'w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/10 flex-shrink-0';
+          largeEmblem.innerHTML = '<span class="w-9 h-9 rounded-full bg-amber-500 text-slate-950 font-black text-xl inline-flex items-center justify-center font-mono leading-none shadow-md">₿</span>';
+        }
+
+        if (mainScore) {
+          mainScore.innerText = cryptoFngData.score;
+          mainScore.className = 'text-4xl sm:text-5xl font-black text-emerald-400 tabular leading-none';
+        }
+        if (mainStatus) mainStatus.innerText = cryptoFngData.status;
+        if (scaleDesc) scaleDesc.innerText = 'Alternative.me 가상자산 지수';
+        if (currentTag) currentTag.innerText = `${cryptoFngData.score}점 탐욕`;
+        if (actionText) actionText.innerHTML = `현재 암호화폐 시장은 <strong>${cryptoFngData.status}</strong>입니다. 단기 급등 종목 추격 매수를 자제하고, 실질 유틸리티를 가진 <strong>RWA/NFT 독점 인프라(LINK, ONDO, RENDER, IMX)</strong>를 차분히 분할 적립하세요!`;
+        if (sourceText) sourceText.innerText = '출처: Alternative.me Crypto';
+        if (sourceLink) sourceLink.href = 'https://alternative.me/crypto/fear-and-greed-index/';
+        if (needle) needle.style.left = `${cryptoFngData.score}%`;
+      }
+    }
+
+    function triggerConfetti() {
+      confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-3 rounded-2xl text-xs font-bold shadow-2xl flex items-center gap-2 transform transition-all duration-300 translate-y-4 opacity-0 pointer-events-auto border ${
+        type === 'success' 
+          ? 'bg-slate-900 text-emerald-400 border-emerald-500/40 shadow-emerald-950/50' 
+          : 'bg-slate-900 text-amber-400 border-amber-500/40 shadow-amber-950/50'
+      }`;
+      toast.innerHTML = `<span class="w-2 h-2 rounded-full ${type === 'success' ? 'bg-emerald-400' : 'bg-amber-400'} animate-ping"></span> ${message}`;
+      container.appendChild(toast);
+
+      setTimeout(() => { toast.classList.remove('translate-y-4', 'opacity-0'); }, 10);
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    async function refreshAllRealtimeData() {
+      const icon = document.getElementById('refresh-icon');
+      if (icon) icon.classList.add('animate-spin');
+
+      const now = new Date();
+      const timeStr = now.getFullYear() + '-' + 
+        String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+        String(now.getDate()).padStart(2, '0') + ' ' + 
+        String(now.getHours()).padStart(2, '0') + ':' + 
+        String(now.getMinutes()).padStart(2, '0') + ':' + 
+        String(now.getSeconds()).padStart(2, '0');
+
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.rates && data.rates.KRW) {
+            const krw = data.rates.KRW.toFixed(2);
+            document.getElementById('ticker-usdkrw').innerText = '₩' + Number(krw).toLocaleString();
+          }
+        }
+      } catch (e) {}
+
+      stockFngData = { score: 47, status: 'Neutral (중립)' };
+
+      try {
+        const res = await fetch('https://api.alternative.me/fng/?limit=1');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.data && data.data.length > 0) {
+            const cryptoVal = parseInt(data.data[0].value);
+            const cryptoStatus = data.data[0].value_classification;
+            cryptoFngData = { score: cryptoVal, status: `${cryptoStatus}` };
+          }
+        }
+      } catch (e) {}
+
+      toggleFngTab(currentFngTab);
+
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=chainlink,ondo-finance,render-token,immutable-x&vs_currencies=usd&include_24hr_change=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.chainlink) updateCryptoDOM('link', data.chainlink.usd, data.chainlink.usd_24h_change);
+          if (data['ondo-finance']) updateCryptoDOM('ondo', data['ondo-finance'].usd, data['ondo-finance'].usd_24h_change);
+          if (data['render-token']) updateCryptoDOM('render', data['render-token'].usd, data['render-token'].usd_24h_change);
+          if (data['immutable-x']) updateCryptoDOM('imx', data['immutable-x'].usd, data['immutable-x'].usd_24h_change);
+        }
+      } catch (e) {}
+
+      document.getElementById('last-refresh-time').innerText = timeStr;
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove('animate-spin');
+        showToast(`🟢 미국 주식(47점), 코인, 환율 실시간 갱신 완료! (${timeStr})`, 'success');
+      }, 600);
+    }
+
+    function updateCryptoDOM(id, price, chg) {
+      const priceStr = '$' + (price < 1 ? price.toFixed(3) : price.toFixed(2));
+      const chgStr = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+      const isUp = chg >= 0;
+
+      const cPrice = document.getElementById(`card-price-${id}`);
+      const cChg = document.getElementById(`card-chg-${id}`);
+      if (cPrice) cPrice.innerText = priceStr;
+      if (cChg) {
+        cChg.innerText = chgStr;
+        cChg.className = isUp ? 'text-emerald-400 text-[10px]' : 'text-rose-400 text-[10px]';
+      }
+    }
+
+    let dividendChartInstance = null;
+    function calcMonthlyDividend() {
+      const investManwon = parseFloat(document.getElementById('div-invest-amount').value) || 5000;
+      const model = document.getElementById('div-model-select').value;
+
+      let annualYield = 0.055;
+      let growthRate = 0.10;
+
+      if (model === 'income') {
+        annualYield = 0.092;
+        growthRate = 0.06;
+      } else if (model === 'growth') {
+        annualYield = 0.039;
+        growthRate = 0.12;
+      }
+
+      const thisYearAnnual = Math.round(investManwon * annualYield * 10000);
+      const thisYearMonthly = Math.round(thisYearAnnual / 12);
+      const lastYearMonthly = Math.round(thisYearMonthly / (1 + growthRate));
+      const in5YearsMonthly = Math.round(thisYearMonthly * Math.pow(1 + growthRate, 5));
+
+      document.getElementById('div-last-year-val').innerText = `₩ ${lastYearMonthly.toLocaleString()}원 / 월`;
+      document.getElementById('div-this-year-val').innerText = `₩ ${thisYearMonthly.toLocaleString()}원 / 월`;
+      document.getElementById('div-annual-val').innerText = `₩ ${thisYearAnnual.toLocaleString()}원 / 년`;
+
+      renderDividendChart(lastYearMonthly / 10000, thisYearMonthly / 10000, in5YearsMonthly / 10000);
+    }
+
+    function renderDividendChart(last = 21.2, current = 23.5, future = 37.8) {
+      const ctx = document.getElementById('dividendGrowthChart');
+      if (!ctx) return;
+      if (dividendChartInstance) dividendChartInstance.destroy();
+
+      dividendChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['작년 실제 지급', '올해 예상 지급', '5년 후 (성장+재투자)'],
+          datasets: [{
+            label: '월배당금 (만원)',
+            data: [Number(last.toFixed(1)), Number(current.toFixed(1)), Number(future.toFixed(1))],
+            backgroundColor: ['#64748B', '#10B981', '#F59E0B'],
+            borderRadius: 8,
+            barThickness: 36
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(c) { return c.parsed.y + ' 만원/월'; }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 10 } } },
+            y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8', callback: v => v + '만' } }
+          }
+        }
+      });
+    }
+
+    function calcTaxRefundPro() {
+      const monthly = parseFloat(document.getElementById('input-pension-monthly').value) || 0;
+      const rate = parseFloat(document.getElementById('select-salary-tier').value) || 0.165;
+      const annual = Math.min(monthly * 12, 600);
+      const refund = Math.round(annual * rate * 10000);
+      document.getElementById('tax-refund-display').innerText = '₩ ' + refund.toLocaleString();
+    }
+
+    function calcInfinitePro() {
+      const seed = parseFloat(document.getElementById('inf-seed-pro').value) || 1000;
+      const avg = parseFloat(document.getElementById('inf-avg-pro').value) || 65.0;
+      const price = parseFloat(document.getElementById('inf-price-pro').value) || 62.5;
+
+      const perRound = seed / 40;
+      const perRoundUSD = Math.round((perRound * 10000) / 1350);
+
+      document.getElementById('inf-round-val').innerText = `₩ ${Math.round(perRound).toLocaleString()}만원 (약 $${perRoundUSD})`;
+      document.getElementById('inf-loc1-val').innerText = `$${avg.toFixed(2)} 에 0.5회분`;
+      document.getElementById('inf-loc2-val').innerText = `$${(price * 1.05).toFixed(2)} 에 0.5회분`;
+      document.getElementById('inf-target-val').innerText = `$${(avg * 1.10).toFixed(2)}`;
+    }
+
+    function calcBuildingPro() {
+      const price = parseFloat(document.getElementById('bldg-price-pro').value) || 50000;
+      const loanPct = (parseFloat(document.getElementById('bldg-loan-pro').value) || 70) / 100;
+      const rate = (parseFloat(document.getElementById('bldg-rate-pro').value) || 5.5) / 100;
+      const deposit = parseFloat(document.getElementById('bldg-dep-pro').value) || 5000;
+      const monthlyRent = parseFloat(document.getElementById('bldg-rent-pro').value) || 280;
+
+      const loan = price * loanPct;
+      const tax = price * 0.046;
+      const seed = (price - loan - deposit) + tax;
+      const monthlyInterest = (loan * rate) / 12;
+      const netMonthly = monthlyRent - monthlyInterest;
+
+      document.getElementById('res-seed-pro').innerText = '₩ ' + (seed >= 10000 ? (seed/10000).toFixed(1) + '억 ' : Math.round(seed) + '만원');
+      document.getElementById('res-loan-pro').innerText = '₩ ' + (loan >= 10000 ? (loan/10000).toFixed(1) + '억 ' : Math.round(loan) + '만원');
+      document.getElementById('res-interest-pro').innerText = '- ₩ ' + monthlyInterest.toFixed(1) + '만원';
+      document.getElementById('res-net-pro').innerText = (netMonthly >= 0 ? '+ ₩ ' : '- ₩ ') + Math.abs(netMonthly).toFixed(1) + '만원 / 월';
+    }
+
+    let overviewPieChart = null;
+    function renderOverviewChart() {
+      const ctx = document.getElementById('overviewPieChart');
+      if (!ctx) return;
+      if (overviewPieChart) overviewPieChart.destroy();
+
+      overviewPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['절세 코어(연금/ISA)', '5분 무한매수(TQQQ)', '웹3 인프라(RWA/NFT)'],
+          datasets: [{
+            data: [userProfile.ratioCore, userProfile.ratioAlpha, userProfile.ratioWeb3],
+            backgroundColor: ['#10B981', '#F59E0B', '#8B5CF6'],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          cutout: '72%'
+        }
+      });
+    }
+
+    const vaultDocs = {
+      '14_WALL_STREET_TRINITY_AI_STRATEGY': {
+        title: '👑 14. [거장 통합] 월가 3대 거장(버핏·달리오·드라켄밀러) 삼위일체 AI 투자 전략',
+        content: `
+          <div class="p-4 bg-gradient-to-br from-amber-950/60 to-slate-900 border border-amber-500/40 rounded-2xl mb-4 space-y-2">
+            <div class="text-amber-400 font-black text-sm">💡 삼위일체(Trinity) 핵심 투자 공식</div>
+            <p class="text-xs text-slate-200 leading-relaxed">
+              "<strong>버핏의 현금 방패</strong>로 바겐세일(공포 25 이하)을 기다리고, <strong>달리오의 분산</strong>으로 거시 위기를 방어하며, <strong>드라켄밀러의 독점 인프라</strong>로 퀀텀점프하라."
+            </p>
+          </div>
+
+          <h4 class="font-bold text-white text-sm mt-3">1. 버핏의 방패 (절세 코어 70%)</h4>
+          <p class="text-xs text-slate-300">연금저축(연 99만 환급) + ISA + SOL미국배당/TIGER월배당 ETF로 안정적인 월 현금흐름 수취 및 바겐세일 시드 축적.</p>
+
+          <h4 class="font-bold text-white text-sm mt-3">2. 달리오의 균형 (70:20:10 황금 배분)</h4>
+          <p class="text-xs text-slate-300">몰빵 금지. 코어 70% + 알파 20% + 웹3 인프라 10%의 철저한 자산배분으로 어떤 폭락장에서도 멘탈과 계좌를 보존.</p>
+
+          <h4 class="font-bold text-white text-sm mt-3">3. 드라켄밀러의 창 (알파 20% + 웹3 10%)</h4>
+          <p class="text-xs text-slate-300">라오어 TQQQ 40분할 무한매수(+10% 기계적 익절) + 블랙록/애플이 채택한 RWA/GPU 독점 인프라(LINK, ONDO, RENDER)로 복리 극대화.</p>
+
+          <h4 class="font-bold text-white text-sm mt-3">4. 최종 3단계 FIRE 완성</h4>
+          <p class="text-xs text-slate-300">3년 내 2억 시드 ➡️ 5억대 상가주택 밸류애드(70% 대출) ➡️ <strong>월세 300만 + 배당 150만 = 월 450만원 완전한 경제적 자유</strong> 달성!</p>
+        `
+      },
+      '13_SYNTHESIZED_MASTER_PROPOSAL': {
+        title: '👑 13. [통합 제안] 지금까지의 모든 학습을 집대성한 맞춤형 부자 마스터플랜',
+        content: `
+          <div class="p-3.5 bg-amber-950/40 border border-amber-500/40 rounded-2xl mb-4">
+            <strong class="text-amber-400 font-bold text-sm">통합 핵심 전략</strong>
+            <p class="text-xs text-slate-300 mt-1">본업 월급 & 신용도 ➡️ 절세 코어(70%) + 5분 알파(20%) + 웹3 인프라(10%) ➡️ 3년 내 2억 시드 ➡️ 수도권 꼬마빌딩 밸류애드 퀀텀점프!</p>
+          </div>
+          <h4 class="font-bold text-white text-sm">1. 3대 절세 계좌 세팅</h4>
+          <p>연금저축(월 50만) 연 99만 환급 + ISA 3년 풍차돌리기 300만 추가공제.</p>
+          <h4 class="font-bold text-white text-sm mt-3">2. 5분 무한매수 & 공포지수</h4>
+          <p>TQQQ 40분할 LOC 종가 주문 + CNN 공포지수 25 이하 역발상 줍줍.</p>
+          <h4 class="font-bold text-white text-sm mt-3">3. 꼬마빌딩 밸류애드 & FIRE</h4>
+          <p>대출 70% 레버리지로 상가주택 매입 후 1층 상가 용도변경 리모델링으로 월세 300만+ 사표 달성.</p>
+        `
+      },
+      '10_PENSION_AND_ISA_ETF_PORTFOLIO': {
+        title: '💰 10. 연금저축펀드 & ISA 계좌 최적 ETF 포트폴리오 가이드',
+        content: `
+          <h4 class="font-bold text-white text-sm">3040 밸런스 정석형 포트폴리오</h4>
+          <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-300">
+            <li><strong>TIGER 미국S&P500 (30%)</strong>: 미국 500대 우량 기업 분산</li>
+            <li><strong>TIGER 미국나스닥100 (20%)</strong>: 빅테크 고성장 엔진</li>
+            <li><strong>TIGER 미국배당다우존스 (30%)</strong>: 주가성장 + 월배당금 재투자</li>
+            <li><strong>TIGER 미국30년국채+12%프리미엄(H) (20%)</strong>: 안전자산 + 고배당 인컴</li>
+          </ul>
+        `
+      },
+      '07_INFINITE_BUYING_METHOD': {
+        title: '⚙️ 07. 라오어 무한매수법 & VR 가이드',
+        content: `
+          <h4 class="font-bold text-white text-sm">TQQQ 40분할 LOC 매수 룰</h4>
+          <p class="text-xs text-slate-300">원금을 40회분으로 나누어 매일 평단가와 현재가+5%에 LOC 분할 매수. 평단가 대비 +10% 수익 시 전량 익절 후 새로운 사이클을 시작합니다.</p>
+        `
+      },
+      '08_SMALL_BUILDING_VALUE_ADD': {
+        title: '🏢 08. 소액 꼬마빌딩 밸류애드 & 부동산 레버리지 전략',
+        content: `
+          <h4 class="font-bold text-white text-sm">밸류애드 4단계 공식</h4>
+          <p class="text-xs text-slate-300">1. 노후 단독/상가주택 저가 매입 ➡️ 2. 근생 상가로 용도변경 ➡️ 3. 트렌디한 외관 리모델링 ➡️ 4. 감성 F&B 및 앵커 테넌트 입점으로 임대료 2배 인상 & 감정가 급등.</p>
+        `
+      },
+      '09_OFFICE_WORKER_WEALTH_STRATEGY': {
+        title: '👔 09. 일반 회사원/직장인을 위한 실전 부자 전략',
+        content: `
+          <h4 class="font-bold text-white text-sm">직장인의 3대 치트키</h4>
+          <p class="text-xs text-slate-300">1. 안정적인 월급(하락장 방패) + 2. 금융권 최고 신용도(대출 레버리지) + 3. 시간 분리형 무인 시스템(공간대여 전대차 & 5분 자동화 투자).</p>
+        `
+      },
+      '11_RWA_TOP5_INVESTMENT_GUIDE': {
+        title: '🌐 11. RWA(실물자산 토큰화) 탑 5 추천 종목',
+        content: `
+          <p class="text-xs text-slate-300">1. ONDO(블랙록 국채 토큰화) | 2. LINK(SWIFT/DTCC 연동 오라클) | 3. OM(중동 규제 L1) | 4. PENDLE(이자율 거래소) | 5. MKR(실제 국채 보유 1위)</p>
+        `
+      },
+      '12_NFT_TOP5_INVESTMENT_GUIDE': {
+        title: '🎨 12. NFT & 웹3 게이밍/인프라 탑 5 추천 종목',
+        content: `
+          <p class="text-xs text-slate-300">1. IMX(디즈니 제휴 가스비 0원 게임 L2) | 2. RENDER(애플 연동 3D/AI GPU 렌더링) | 3. BLUR(오픈씨 제친 1위 마켓) | 4. APE(BAYC IP) | 5. BEAM(게이밍 DAO)</p>
+        `
+      },
+      '06_MARKET_INDICATORS_GUIDE': {
+        title: '🧭 06. 월가 핵심 지표 & CNN 공포지수 분석 가이드',
+        content: `
+          <p class="text-xs text-slate-300">CNN 공포지수 25 이하 = 극단적 공포(바겐세일 매수 기회). VIX 30 돌파, 풋콜비율 1.0 초과, 버핏지수 모니터링 체계.</p>
+        `
+      },
+      '00_EVOLUTION_INDEX': {
+        title: '📈 00. 부의 엔진 성장 및 진화 색인 (Level 14)',
+        content: `
+          <div class="text-xs text-slate-300 space-y-1">
+            <div>• <strong>#001~#010</strong>: 프로젝트 점화, 4대 파이프라인 및 올인원 포털</div>
+            <div>• <strong>#011</strong>: 1줄 버튼식 내비게이션 & 듀얼 공포지수 탭</div>
+            <div>• <strong>#012</strong>: 사용자 맞춤형 재정 설정 모달 & 전체 화면 즉각 연동</div>
+            <div>• <strong>#013</strong>: 듀얼 게이지 탭 전환 결함 해결 및 자체 테스트</div>
+            <div>• <strong>#014</strong>: 3대 롤링 다이스 티커(미국/국내/웹3) & 금융사 Open API 자동 연동 센터 완비</div>
+          </div>
+        `
+      }
+    };
+
+    function displayDoc(docKey) {
+      const d = vaultDocs[docKey];
+      if (d) {
+        document.getElementById('vault-doc-title').innerText = d.title;
+        document.getElementById('vault-doc-content').innerHTML = d.content;
+
+        // Dynamic Active Button Styling
+        const allBtns = document.querySelectorAll('.vault-item-btn');
+        allBtns.forEach(btn => {
+          btn.className = 'vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 block transition';
+        });
+
+        const activeBtn = document.getElementById(`doc-btn-${docKey}`);
+        if (activeBtn) {
+          activeBtn.className = 'vault-item-btn w-full text-left p-3 rounded-xl bg-slate-900 border border-amber-500/50 text-amber-300 font-black block transition shadow-md shadow-amber-950/30';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadUserProfile();
+      displayDoc('14_WALL_STREET_TRINITY_AI_STRATEGY');
+      refreshAllRealtimeData();
+      
+      // Start High-Precision Securities Carousel with Staggered Multi-Slot Roll
+      startStaggeredSecuritiesTickers();
+    });
+  </script>
+</body>
+</html>
