@@ -9,29 +9,55 @@ function toggleFngTab(tab) {
   currentFngTab = tab;
   const btnStock = document.getElementById('fng-tab-stock');
   const btnCrypto = document.getElementById('fng-tab-crypto');
-  const needle = document.getElementById('fng-needle');
-  const scoreVal = document.getElementById('fng-score-val');
-  const scoreStatus = document.getElementById('fng-score-status');
-  const emblemStock = document.getElementById('fng-emblem-stock');
-  const emblemCrypto = document.getElementById('fng-emblem-crypto');
+  const largeEmblem = document.getElementById('fng-large-emblem');
+  const mainScore = document.getElementById('fng-main-score');
+  const mainStatus = document.getElementById('fng-main-status');
+  const scaleDesc = document.getElementById('fng-scale-desc');
+  const actionText = document.getElementById('fng-action-text');
+  const currentTag = document.getElementById('fng-current-tag');
+  const sourceText = document.getElementById('fng-source-text');
+  const sourceLink = document.getElementById('fng-source-link');
+  const needle = document.getElementById('fng-gauge-needle');
 
   if (tab === 'stock') {
-    if (btnStock) btnStock.className = 'px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold transition';
-    if (btnCrypto) btnCrypto.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white transition';
-    if (emblemStock) emblemStock.classList.remove('hidden');
-    if (emblemCrypto) emblemCrypto.classList.add('hidden');
+    if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl bg-sky-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
+    if (btnCrypto) btnCrypto.className = 'py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold flex items-center justify-center gap-2 transition whitespace-nowrap';
 
-    if (scoreVal) scoreVal.innerText = stockFngData.score;
-    if (scoreStatus) scoreStatus.innerText = stockFngData.status;
+    if (largeEmblem) {
+      largeEmblem.className = 'w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shadow-lg shadow-sky-500/10 flex-shrink-0';
+      largeEmblem.innerHTML = '<svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>';
+    }
+
+    if (mainScore) {
+      mainScore.innerText = stockFngData.score;
+      mainScore.className = 'text-4xl sm:text-5xl font-black text-amber-400 tabular leading-none';
+    }
+    if (mainStatus) mainStatus.innerText = stockFngData.status;
+    if (scaleDesc) scaleDesc.innerText = 'CNN Business 공식 지수';
+    if (currentTag) currentTag.innerText = `${stockFngData.score}점 대기`;
+    if (actionText) actionText.innerHTML = `현재 미국 주식 시장은 <strong>${stockFngData.status}</strong>입니다. 기존 정액 적립식을 유지하며, 지수가 <strong>25점 이하(극단적 공포)</strong>로 진입하면 모아둔 상여금으로 QQQ/QLD 바겐세일 집중 매수를 집행하세요!`;
+    if (sourceText) sourceText.innerText = '출처: CNN Business Stock';
+    if (sourceLink) sourceLink.href = 'https://edition.cnn.com/markets/fear-and-greed';
     if (needle) needle.style.left = `${stockFngData.score}%`;
   } else {
-    if (btnCrypto) btnCrypto.className = 'px-3 py-1 rounded-lg bg-purple-500 text-white font-bold transition';
-    if (btnStock) btnStock.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white transition';
-    if (emblemCrypto) emblemCrypto.classList.remove('hidden');
-    if (emblemStock) emblemStock.classList.add('hidden');
+    if (btnCrypto) btnCrypto.className = 'py-2 px-3 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center gap-2 transition shadow-md whitespace-nowrap';
+    if (btnStock) btnStock.className = 'py-2 px-3 rounded-xl text-slate-400 hover:text-white font-bold flex items-center justify-center gap-2 transition whitespace-nowrap';
 
-    if (scoreVal) scoreVal.innerText = cryptoFngData.score;
-    if (scoreStatus) scoreStatus.innerText = cryptoFngData.status;
+    if (largeEmblem) {
+      largeEmblem.className = 'w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/10 flex-shrink-0';
+      largeEmblem.innerHTML = '<span class="w-9 h-9 rounded-full bg-amber-500 text-slate-950 font-black text-xl inline-flex items-center justify-center font-mono leading-none shadow-md">₿</span>';
+    }
+
+    if (mainScore) {
+      mainScore.innerText = cryptoFngData.score;
+      mainScore.className = 'text-4xl sm:text-5xl font-black text-emerald-400 tabular leading-none';
+    }
+    if (mainStatus) mainStatus.innerText = cryptoFngData.status;
+    if (scaleDesc) scaleDesc.innerText = 'Alternative.me 가상자산 지수';
+    if (currentTag) currentTag.innerText = `${cryptoFngData.score}점 탐욕`;
+    if (actionText) actionText.innerHTML = `현재 암호화폐 시장은 <strong>${cryptoFngData.status}</strong>입니다. 단기 급등 종목 추격 매수를 자제하고, 실질 유틸리티를 가진 <strong>RWA/NFT 독점 인프라(LINK, ONDO, RENDER, IMX)</strong>를 차분히 분할 적립하세요!`;
+    if (sourceText) sourceText.innerText = '출처: Alternative.me Crypto';
+    if (sourceLink) sourceLink.href = 'https://alternative.me/crypto/fear-and-greed-index/';
     if (needle) needle.style.left = `${cryptoFngData.score}%`;
   }
 }
