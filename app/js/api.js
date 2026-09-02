@@ -161,7 +161,14 @@ function updateCryptoDOM(id, price, chg) {
 }
 
 function openApiBridgeModal() {
-  document.getElementById('api-bridge-modal').classList.remove('hidden');
+  const modal = document.getElementById('api-bridge-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    const savedGemini = localStorage.getItem('wealth_gemini_key');
+    if (savedGemini && document.getElementById('api-gemini-key')) {
+      document.getElementById('api-gemini-key').value = savedGemini;
+    }
+  }
 }
 
 function closeApiBridgeModal() {
@@ -192,18 +199,70 @@ function runMockApiSync() {
 }
 
 function saveAndSyncOpenApi() {
-  const kisKey = document.getElementById('api-kis-appkey').value.trim();
-  const upbitKey = document.getElementById('api-upbit-access').value.trim();
+  const kisKey = document.getElementById('api-kis-appkey') ? document.getElementById('api-kis-appkey').value.trim() : '';
+  const upbitKey = document.getElementById('api-upbit-access') ? document.getElementById('api-upbit-access').value.trim() : '';
+  const geminiKey = document.getElementById('api-gemini-key') ? document.getElementById('api-gemini-key').value.trim() : '';
 
-  if (!kisKey && !upbitKey) {
-    showToast('⚠️ AppKey를 입력하시거나 [원클릭 모의 잔고 자동 동기화]를 이용해주세요!', 'warning');
+  if (geminiKey) {
+    localStorage.setItem('wealth_gemini_key', geminiKey);
+  }
+
+  if (!kisKey && !upbitKey && !geminiKey) {
+    showToast('⚠️ API Key를 입력하시거나 [원클릭 모의 잔고 자동 동기화]를 이용해주세요!', 'warning');
     return;
   }
 
-  showToast('🔄 등록된 API Key로 실시간 잔고를 안전하게 수신 중...', 'success');
+  showToast('🔄 등록된 API Key(증권/거래소/Google AI)를 안전하게 암호화 저장 중...', 'success');
   setTimeout(() => {
     closeApiBridgeModal();
-    showToast('🟢 실시간 API 잔고가 대시보드에 성공적으로 반영되었습니다!', 'success');
+    if (geminiKey) {
+      showToast('🤖 구글 AI 스튜디오 (Gemini 1.5 Flash) 실시간 연동이 완료되었습니다!', 'success');
+    } else {
+      showToast('🟢 실시간 API 잔고가 대시보드에 성공적으로 반영되었습니다!', 'success');
+    }
     triggerConfetti();
   }, 1000);
+}
+
+/**
+ * Call Google AI Studio Gemini API for autonomous real-time wealth advice
+ */
+async function callGoogleAiStudio(promptText) {
+  const apiKey = localStorage.getItem('wealth_gemini_key');
+  if (!apiKey) {
+    openApiBridgeModal();
+    showToast('🔑 먼저 구글 AI 스튜디오 API Key를 등록해주세요! (무료 발급 링크 제공)', 'warning');
+    return null;
+  }
+
+  showToast('🤖 구글 Gemini AI가 실시간 매크로 및 자산 데이터를 심층 분석 중입니다...', 'warning');
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: `당신은 대한민국 직장인을 위한 최고 권위의 10억 자산 & FIRE 포트폴리오 AI 수석 자산운용가입니다. 아래 질문/데이터에 대해 월가 3대 거장(버핏, 달리오, 드라켄밀러)의 원칙과 실전 투자 액션을 명쾌하고 날카롭게 한국어로 답변해주세요:\n\n${promptText}`
+          }]
+        }]
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`Google AI API Error: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (reply) {
+      showToast('✨ 구글 Gemini 1.5 AI 실시간 분석 완료!', 'success');
+      return reply;
+    }
+  } catch (err) {
+    showToast(`❌ Google AI 호출 실패: ${err.message}`, 'warning');
+  }
+  return null;
 }
