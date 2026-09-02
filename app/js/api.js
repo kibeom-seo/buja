@@ -237,32 +237,33 @@ async function callGoogleAiStudio(promptText) {
 
   showToast('🤖 구글 Gemini AI가 실시간 매크로 및 자산 데이터를 심층 분석 중입니다...', 'warning');
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `당신은 대한민국 직장인을 위한 최고 권위의 10억 자산 & FIRE 포트폴리오 AI 수석 자산운용가입니다. 아래 질문/데이터에 대해 월가 3대 거장(버핏, 달리오, 드라켄밀러)의 원칙과 실전 투자 액션을 명쾌하고 날카롭게 한국어로 답변해주세요:\n\n${promptText}`
+  const models = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-3.6-flash', 'gemini-2.5-flash-lite'];
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `당신은 대한민국 직장인을 위한 최고 권위의 10억 자산 & FIRE 포트폴리오 AI 수석 자산운용가입니다. 아래 질문/데이터에 대해 월가 3대 거장(버핏, 달리오, 드라켄밀러)의 원칙과 실전 투자 액션을 명쾌하고 날카롭게 한국어로 답변해주세요:\n\n${promptText}`
+            }]
           }]
-        }]
-      })
-    });
+        })
+      });
 
-    if (!res.ok) {
-      throw new Error(`Google AI API Error: ${res.status}`);
+      if (res.ok) {
+        const data = await res.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (reply) {
+          showToast('✨ 구글 Gemini AI 실시간 분석 완료!', 'success');
+          return reply;
+        }
+      }
+    } catch (err) {
+      console.warn(`Model ${model} try failed, trying next...`);
     }
-
-    const data = await res.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (reply) {
-      showToast('✨ 구글 Gemini 1.5 AI 실시간 분석 완료!', 'success');
-      return reply;
-    }
-  } catch (err) {
-    showToast(`❌ Google AI 호출 실패: ${err.message}`, 'warning');
   }
   return null;
 }
