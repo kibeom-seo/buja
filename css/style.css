@@ -2,17 +2,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Soothing Warm Dark Palette (Low Eye Strain & Premium Finish) */
+  /* Modern Clean Fintech & Makro Dark Palette */
   --bg-main: #0B0F19;
   --bg-secondary: #0F1626;
-  --card-bg: rgba(18, 26, 43, 0.78);
-  --card-hover-bg: rgba(24, 34, 56, 0.88);
+  --card-bg: rgba(18, 26, 43, 0.82);
+  --card-hover-bg: rgba(24, 34, 56, 0.92);
   --card-border: rgba(255, 255, 255, 0.08);
-  --card-border-hover: rgba(245, 158, 11, 0.3);
+  --card-border-hover: rgba(212, 240, 56, 0.35);
   
-  /* Soft Accent Colors (Subtle & Harmonic) */
+  /* Electric Accents */
+  --lime-electric: #D4F038;
   --gold-soft: #F1C40F;
-  --gold-muted: #D4AC0D;
   --mint-soft: #2ECC71;
   --blue-soft: #5DADE2;
   --purple-soft: #AF7AC5;
@@ -34,7 +34,7 @@ body {
   letter-spacing: -0.02em;
   line-height: 1.6;
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(241, 196, 15, 0.025) 0%, transparent 45%),
+    radial-gradient(circle at 10% 10%, rgba(212, 240, 56, 0.03) 0%, transparent 45%),
     radial-gradient(circle at 90% 15%, rgba(46, 204, 113, 0.025) 0%, transparent 45%),
     radial-gradient(circle at 50% 85%, rgba(93, 173, 226, 0.02) 0%, transparent 50%);
   background-attachment: fixed;
@@ -53,13 +53,24 @@ body {
   line-height: 1.45 !important;
 }
 
-/* Soothing Gradients */
+/* Makro Style Electric Lime & Gold Gradients */
 .gold-gradient-bg {
   background: linear-gradient(135deg, #F39C12 0%, #D68910 100%);
 }
 
+.lime-gradient-bg {
+  background: linear-gradient(135deg, #E6F94A 0%, #D4F038 100%);
+  color: #0B0F19;
+}
+
 .gold-gradient-text {
   background: linear-gradient(135deg, #F9E79F 0%, #F5B041 50%, #EB984E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lime-gradient-text {
+  background: linear-gradient(135deg, #F4FF81 0%, #D4F038 60%, #AEEA00 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -70,7 +81,7 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Matte Glass Cards */
+/* Makro Inspired Frosted Glass Bento Cards */
 .card-glass {
   background: var(--card-bg);
   backdrop-filter: blur(20px);
@@ -87,7 +98,7 @@ body {
   background: var(--card-hover-bg);
   border-color: var(--card-border-hover);
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.55), 0 0 16px rgba(243, 156, 18, 0.08);
+  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.55), 0 0 16px rgba(212, 240, 56, 0.1);
 }
 
 /* Soft 3D Asset Badge */
