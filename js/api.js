@@ -83,7 +83,23 @@ async function refreshAllRealtimeData() {
       const data = await res.json();
       if (data.rates && data.rates.KRW) {
         const krw = data.rates.KRW.toFixed(2);
-        document.getElementById('ticker-usdkrw').innerText = '₩' + Number(krw).toLocaleString();
+        const krwNum = parseFloat(krw);
+        const prevClose = 1344.20; // Previous close reference
+        const diff = krwNum - prevClose;
+        const chgPct = ((diff / prevClose) * 100);
+        const isUp = chgPct >= 0;
+        const chgText = (isUp ? '+' : '') + chgPct.toFixed(2) + '%' + (isUp ? ' 🔺' : ' 🔻');
+
+        const elPrice = document.getElementById('ticker-usdkrw');
+        if (elPrice) elPrice.innerText = '₩' + Number(krw).toLocaleString();
+
+        const elChg = document.getElementById('ticker-usdkrw-chg');
+        if (elChg) {
+          elChg.innerText = chgText;
+          elChg.className = isUp 
+            ? 'text-emerald-400 text-[10px] font-bold bg-emerald-950/80 px-1 py-0.5 rounded border border-emerald-800/80' 
+            : 'text-rose-400 text-[10px] font-bold bg-rose-950/80 px-1 py-0.5 rounded border border-rose-800/80';
+        }
       }
     }
   } catch (e) {}

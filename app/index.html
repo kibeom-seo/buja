@@ -50,7 +50,7 @@
     }
   </script>
   
-  <link rel="stylesheet" href="./css/style.css?v=2.2.1">
+  <link rel="stylesheet" href="./css/style.css?v=2.4.0_ultra">
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950">
 
@@ -69,10 +69,15 @@
       <!-- 3-SLOT HIGH-PRECISION SECURITIES CAROUSEL (ZERO JITTER & FIXED FRAME) -->
       <div class="flex items-center gap-3 sm:gap-4 tabular font-mono text-xs overflow-hidden flex-1 max-w-5xl justify-around">
         
-        <!-- USD/KRW Exchange Rate (Pinned Stable Widget) -->
-        <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800 flex-shrink-0 w-[140px] justify-between">
-          <span class="text-slate-400 font-sans text-[10px] font-bold">USD/KRW</span>
-          <span id="ticker-usdkrw" class="font-bold text-white text-xs">₩1,348.50</span>
+        <!-- USD/KRW Exchange Rate (Pinned Stable Widget with Daily Change %) -->
+        <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-amber-500/30 flex-shrink-0 min-w-[195px] justify-between shadow-sm">
+          <span class="text-slate-400 font-sans text-[10px] font-bold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> USD/KRW
+          </span>
+          <div class="flex items-center gap-1.5 tabular font-mono">
+            <span id="ticker-usdkrw" class="font-bold text-white text-xs">₩1,348.50</span>
+            <span id="ticker-usdkrw-chg" class="text-emerald-400 text-[10px] font-bold bg-emerald-950/80 px-1 py-0.5 rounded border border-emerald-800/80">+0.32% 🔺</span>
+          </div>
         </div>
 
         <!-- SLOT 1: 🇺🇸 US STOCKS & ETFS (Fixed Width 245px, Smooth Slide) -->
@@ -595,46 +600,51 @@
     <section id="view-overview" class="space-y-6">
       
       <!-- Personalized Hero Banner -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 border border-slate-800 p-6 sm:p-8 shadow-2xl">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-slate-950 border border-amber-500/20 p-6 sm:p-8 shadow-2xl">
         <div class="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-          <div class="space-y-2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-              <span id="hero-user-greeting">안녕하세요, 부자될 직장인님!</span>
+          <div class="flex items-start gap-4 sm:gap-6">
+            <div class="hidden sm:block w-20 h-20 rounded-3xl overflow-hidden shadow-2xl shadow-amber-500/30 border-2 border-amber-500/40 flex-shrink-0 bg-slate-950">
+              <img src="./img/logo_compass.jpg" alt="Wealth Compass 3D" class="w-full h-full object-cover">
             </div>
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-              우리의 방향은 단 하나: <span class="gold-gradient-text">완전한 경제적 자유(FIRE)</span>
-            </h2>
-            <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed" id="hero-strategy-summary">
-              현재 보유 자산 <strong>5,000만원</strong>을 기반으로, <strong>3년 내 2억원 시드</strong>를 달성하고 꼬마빌딩 밸류애드로 <strong>월세 300만원</strong>의 완전한 자유를 구축합니다.
-            </p>
-
-            <!-- Personalized Live Seed Progress Bar -->
-            <div class="pt-2 max-w-xl space-y-1.5">
-              <div class="flex justify-between text-xs">
-                <span class="text-slate-400">1단계 시드머니 달성률 (<span id="progress-seed-current">₩ 5,000만</span> / <span id="progress-seed-target">2억</span>)</span>
-                <span class="text-amber-400 font-bold font-mono" id="progress-seed-pct">25.0% 달성</span>
+            <div class="space-y-2">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span id="hero-user-greeting">안녕하세요, 부자될 직장인님!</span>
               </div>
-              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                <div id="progress-seed-bar" class="gold-gradient-bg h-full rounded-full transition-all duration-700" style="width: 25%"></div>
+              <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                우리의 방향은 단 하나: <span class="gold-gradient-text">완전한 경제적 자유(FIRE)</span>
+              </h2>
+              <p class="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed" id="hero-strategy-summary">
+                현재 보유 자산 <strong>5,000만원</strong>을 기반으로, <strong>3년 내 2억원 시드</strong>를 달성하고 꼬마빌딩 밸류애드로 <strong>월세 300만원</strong>의 완전한 자유를 구축합니다.
+              </p>
+
+              <!-- Personalized Live Seed Progress Bar -->
+              <div class="pt-2 max-w-xl space-y-1.5">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">1단계 시드머니 달성률 (<span id="progress-seed-current">₩ 5,000만</span> / <span id="progress-seed-target">2억</span>)</span>
+                  <span class="text-amber-400 font-bold font-mono" id="progress-seed-pct">25.0% 달성</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                  <div id="progress-seed-bar" class="gold-gradient-bg h-full rounded-full transition-all duration-700" style="width: 25%"></div>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Quick Metrics Dynamic Ribbon -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full lg:w-auto">
-            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full lg:w-auto flex-shrink-0">
+            <div class="p-3.5 bg-slate-950/90 rounded-2xl border border-slate-800 text-center hover:border-amber-500/30 transition">
               <div class="text-[10px] text-slate-400 font-semibold">내 총 시드 자산</div>
               <div class="text-base sm:text-lg font-black text-amber-400 tabular mt-0.5" id="metric-user-seed">₩ 5,000만</div>
             </div>
-            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center">
+            <div class="p-3.5 bg-slate-950/90 rounded-2xl border border-slate-800 text-center hover:border-emerald-500/30 transition">
               <div class="text-[10px] text-slate-400 font-semibold">월 절세 환급+배당</div>
               <div class="text-base sm:text-lg font-black text-emerald-400 tabular mt-0.5" id="metric-user-monthly-gain">₩ 31.7만+</div>
             </div>
-            <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-slate-800 text-center col-span-2 sm:col-span-1">
+            <div class="p-3.5 bg-slate-950/90 rounded-2xl border border-slate-800 text-center col-span-2 sm:col-span-1 hover:border-blue-500/30 transition">
               <div class="text-[10px] text-slate-400 font-semibold">최종 FIRE 목표</div>
               <div class="text-base sm:text-lg font-black text-blue-400 tabular mt-0.5" id="metric-user-fire-goal">월세 300만</div>
             </div>
@@ -2010,13 +2020,13 @@
   <!-- ========================================== -->
   <!-- 8. MODULAR SCRIPT ARCHITECTURE -->
   <!-- ========================================== -->
-  <script src="./js/ticker.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/state.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/api.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/calculators.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/ui.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/news.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/vault.js?v=2.2.2_fix_fng"></script>
-  <script src="./js/main.js?v=2.2.2_fix_fng"></script>
+  <script src="./js/ticker.js?v=2.4.0_ultra"></script>
+  <script src="./js/state.js?v=2.4.0_ultra"></script>
+  <script src="./js/api.js?v=2.4.0_ultra"></script>
+  <script src="./js/calculators.js?v=2.4.0_ultra"></script>
+  <script src="./js/ui.js?v=2.4.0_ultra"></script>
+  <script src="./js/news.js?v=2.4.0_ultra"></script>
+  <script src="./js/vault.js?v=2.4.0_ultra"></script>
+  <script src="./js/main.js?v=2.4.0_ultra"></script>
 </body>
 </html>
