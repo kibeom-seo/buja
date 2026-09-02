@@ -35,6 +35,24 @@ function switchTab(tabId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function toggleStrategiesMenu(e) {
+  if (e) e.stopPropagation();
+  const popover = document.getElementById('strategies-popover');
+  if (popover) {
+    popover.classList.toggle('hidden');
+    popover.classList.toggle('flex');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const popover = document.getElementById('strategies-popover');
+  const btn = document.getElementById('nav-strategies-btn');
+  if (popover && btn && !btn.contains(e.target) && !popover.contains(e.target)) {
+    popover.classList.add('hidden');
+    popover.classList.remove('flex');
+  }
+});
+
 function showToast(msg, type = 'success') {
   const container = document.getElementById('toast-container');
   if (!container) return;

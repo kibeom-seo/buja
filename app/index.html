@@ -51,7 +51,7 @@
   </script>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css">
-  <link rel="stylesheet" href="./css/style.css?v=3.1.0_google_ai_studio">
+  <link rel="stylesheet" href="./css/style.css?v=3.2.0_dropdown_bridge_fix">
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950">
 
@@ -190,52 +190,54 @@
         </div>
       </div>
 
-      <!-- Sleek Minimalist Text Navigation with Submenu Dropdown (Zero Horizontal Scrollbar) -->
-      <nav class="flex items-center gap-1 sm:gap-2 text-sm relative">
+      <!-- Sleek Minimalist Text Navigation (Spacious & Bug-Free Dropdown Popover) -->
+      <nav class="flex items-center gap-3 sm:gap-8 lg:gap-10 text-sm relative">
         <button onclick="switchTab('overview')" id="nav-overview" class="nav-pill-btn active whitespace-nowrap">
           Home
         </button>
 
-        <!-- Dropdown: Strategies (Plans 1 ~ 4) with Floating Submenu Popover -->
+        <!-- Dropdown: Strategies (Plans 1 ~ 4) with Seamless Hover Bridge & Click Support -->
         <div class="relative group/nav">
-          <button id="nav-strategies-btn" class="nav-pill-btn flex items-center gap-1 whitespace-nowrap">
+          <button onclick="toggleStrategiesMenu(event)" id="nav-strategies-btn" class="nav-pill-btn flex items-center gap-1.5 whitespace-nowrap">
             <span>Strategies</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover/nav:rotate-180 transition-transform"></i>
           </button>
 
-          <!-- Floating Submenu Popover (Makro Style) -->
-          <div class="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover/nav:flex flex-col p-2 bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-2xl shadow-2xl z-50 min-w-[220px] space-y-1">
-            <button onclick="switchTab('plan1')" id="nav-plan1" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition">
-              <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>1. Dividends (월배당)</span>
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">코어 70%</span>
-            </button>
+          <!-- Seamless Floating Submenu Container (with Invisible Bridge to Prevent Disappearance) -->
+          <div id="strategies-popover" class="absolute left-1/2 -translate-x-1/2 top-full pt-2 hidden group-hover/nav:flex flex-col z-50 min-w-[240px]">
+            <div class="p-2 bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-2xl shadow-2xl space-y-1">
+              <button onclick="switchTab('plan1'); toggleStrategiesMenu();" id="nav-plan1" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/90 flex items-center justify-between transition">
+                <span class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                  <span class="font-bold">1. Dividends (월배당)</span>
+                </span>
+                <span class="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-800">코어 70%</span>
+              </button>
 
-            <button onclick="switchTab('plan2')" id="nav-plan2" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition">
-              <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                <span>2. Infinite Buy (무한매수)</span>
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">알파 20%</span>
-            </button>
+              <button onclick="switchTab('plan2'); toggleStrategiesMenu();" id="nav-plan2" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/90 flex items-center justify-between transition">
+                <span class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                  <span class="font-bold">2. Infinite Buy (무한매수)</span>
+                </span>
+                <span class="text-[10px] text-amber-400 font-mono font-bold bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-800">알파 20%</span>
+              </button>
 
-            <button onclick="switchTab('plan3')" id="nav-plan3" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition">
-              <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                <span>3. Web3 & RWA</span>
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">미래 10%</span>
-            </button>
+              <button onclick="switchTab('plan3'); toggleStrategiesMenu();" id="nav-plan3" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/90 flex items-center justify-between transition">
+                <span class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+                  <span class="font-bold">3. Web3 & RWA</span>
+                </span>
+                <span class="text-[10px] text-purple-400 font-mono font-bold bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-800">미래 10%</span>
+              </button>
 
-            <button onclick="switchTab('plan4')" id="nav-plan4" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 flex items-center justify-between transition">
-              <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                <span>4. Real Estate (꼬마빌딩)</span>
-              </span>
-              <span class="text-[10px] text-slate-400 font-mono">FIRE</span>
-            </button>
+              <button onclick="switchTab('plan4'); toggleStrategiesMenu();" id="nav-plan4" class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/90 flex items-center justify-between transition">
+                <span class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                  <span class="font-bold">4. Real Estate (꼬마빌딩)</span>
+                </span>
+                <span class="text-[10px] text-blue-400 font-mono font-bold bg-blue-950/80 px-1.5 py-0.5 rounded border border-blue-800">FIRE</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2080,13 +2082,13 @@
   <!-- ========================================== -->
   <!-- 8. MODULAR SCRIPT ARCHITECTURE -->
   <!-- ========================================== -->
-  <script src="./js/ticker.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/state.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/api.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/calculators.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/ui.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/news.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/vault.js?v=3.1.0_google_ai_studio"></script>
-  <script src="./js/main.js?v=3.1.0_google_ai_studio"></script>
+  <script src="./js/ticker.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/state.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/api.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/calculators.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/ui.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/news.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/vault.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/main.js?v=3.2.0_dropdown_bridge_fix"></script>
 </body>
 </html>
