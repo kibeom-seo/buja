@@ -158,8 +158,8 @@
       <!-- Brand Logo -->
       <div class="flex items-center justify-between w-full md:w-auto">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('overview')">
-          <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-black text-lg group-hover:scale-105 transition transform">
-            ₩
+          <div class="w-10 h-10 rounded-2xl overflow-hidden shadow-lg shadow-amber-500/25 border border-amber-500/40 group-hover:scale-105 transition transform flex-shrink-0 bg-slate-950">
+            <img src="./img/logo_compass.jpg" alt="부의 나침반 3D 로고" class="w-full h-full object-cover">
           </div>
           <div>
             <div class="flex items-center gap-2">
@@ -771,68 +771,89 @@
 
       </div>
 
-      <!-- 4 Pillars Core Navigation Cards -->
+      <!-- 4 Pillars Core Navigation Cards with 3D Luxury Badges -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div onclick="switchTab('plan1')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-emerald-500 group">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">제안 01</span>
-              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400 group-hover:scale-110 transition"></i>
+        <!-- Pillar 1 -->
+        <div onclick="switchTab('plan1')" class="card-glass card-glass-hover rounded-3xl p-5 cursor-pointer flex flex-col justify-between border-t-2 border-t-emerald-500 group relative overflow-hidden">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/20 border border-emerald-500/30 group-hover:scale-110 transition flex-shrink-0 bg-slate-950">
+                <img src="./img/icon_dividend.jpg" alt="절세 월배당" class="w-full h-full object-cover">
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-950/90 text-emerald-400 border border-emerald-800">제안 01</span>
             </div>
-            <h3 class="font-bold text-base text-white">절세 3대 계좌 & 월배당</h3>
-            <p class="text-xs text-slate-400 mt-1">연금저축 연 99만 환급 + 작년/올해 실제 월배당금 비교 분석</p>
+            <div>
+              <h3 class="font-black text-base text-white group-hover:text-emerald-300 transition">절세 3대 계좌 & 월배당</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">연금저축 연 99만 환급 + 작년/올해 실제 월배당금 비교 & 12개월 캘린더</p>
+            </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
             <span class="text-slate-400">코어 자산</span>
-            <span class="text-emerald-400 font-bold" id="card-ratio-core">70% 배분</span>
+            <span class="text-emerald-400 font-bold font-mono" id="card-ratio-core">70% 배분</span>
           </div>
         </div>
 
-        <div onclick="switchTab('plan2')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-amber-500 group">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">제안 02</span>
-              <i data-lucide="zap" class="w-5 h-5 text-amber-400 group-hover:scale-110 transition"></i>
+        <!-- Pillar 2 -->
+        <div onclick="switchTab('plan2')" class="card-glass card-glass-hover rounded-3xl p-5 cursor-pointer flex flex-col justify-between border-t-2 border-t-amber-500 group relative overflow-hidden">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-amber-500/20 border border-amber-500/30 group-hover:scale-110 transition flex-shrink-0 bg-slate-950">
+                <img src="./img/icon_infinite.jpg" alt="5분 무한매수" class="w-full h-full object-cover">
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-950/90 text-amber-400 border border-amber-800">제안 02</span>
             </div>
-            <h3 class="font-bold text-base text-white">5분 무한매수 & 공포지수</h3>
-            <p class="text-xs text-slate-400 mt-1">라오어 TQQQ 40분할 LOC 주문 + CNN 공포지수 25 이하 줍줍</p>
+            <div>
+              <h3 class="font-black text-base text-white group-hover:text-amber-300 transition">5분 무한매수 & 공포지수</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">라오어 TQQQ 40분할 LOC 주문 + CNN 공포지수 25 이하 줍줍</p>
+            </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
             <span class="text-slate-400">알파 수익</span>
-            <span class="text-amber-400 font-bold" id="card-ratio-alpha">20% 배분</span>
+            <span class="text-amber-400 font-bold font-mono" id="card-ratio-alpha">20% 배분</span>
           </div>
         </div>
 
-        <div onclick="switchTab('plan3')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-purple-500 group">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-purple-950 text-purple-400 border border-purple-800">제안 03</span>
-              <i data-lucide="coins" class="w-5 h-5 text-purple-400 group-hover:scale-110 transition"></i>
+        <!-- Pillar 3 -->
+        <div onclick="switchTab('plan3')" class="card-glass card-glass-hover rounded-3xl p-5 cursor-pointer flex flex-col justify-between border-t-2 border-t-purple-500 group relative overflow-hidden">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-purple-500/20 border border-purple-500/30 group-hover:scale-110 transition flex-shrink-0 bg-slate-950">
+                <img src="./img/icon_web3.jpg" alt="RWA 독점 인프라" class="w-full h-full object-cover">
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-950/90 text-purple-400 border border-purple-800">제안 03</span>
             </div>
-            <h3 class="font-bold text-base text-white">RWA & NFT 독점 인프라</h3>
-            <p class="text-xs text-slate-400 mt-1">블랙록 연동 ONDO, SWIFT 표준 LINK, 애플 GPU RENDER</p>
+            <div>
+              <h3 class="font-black text-base text-white group-hover:text-purple-300 transition">RWA & NFT 독점 인프라</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">블랙록 연동 ONDO, SWIFT 표준 LINK, 애플 GPU RENDER</p>
+            </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
             <span class="text-slate-400">미래 엔진</span>
-            <span class="text-purple-400 font-bold" id="card-ratio-web3">10% 배분</span>
+            <span class="text-purple-400 font-bold font-mono" id="card-ratio-web3">10% 배분</span>
           </div>
         </div>
 
-        <div onclick="switchTab('plan4')" class="card-glass card-glass-hover rounded-2xl p-5 cursor-pointer flex flex-col justify-between border-t-4 border-t-blue-500 group">
-          <div>
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">제안 04</span>
-              <i data-lucide="building-2" class="w-5 h-5 text-blue-400 group-hover:scale-110 transition"></i>
+        <!-- Pillar 4 -->
+        <div onclick="switchTab('plan4')" class="card-glass card-glass-hover rounded-3xl p-5 cursor-pointer flex flex-col justify-between border-t-2 border-t-blue-500 group relative overflow-hidden">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border border-blue-500/30 group-hover:scale-110 transition flex-shrink-0 bg-slate-950">
+                <img src="./img/icon_building.jpg" alt="꼬마빌딩 밸류애드" class="w-full h-full object-cover">
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-950/90 text-blue-400 border border-blue-800">제안 04</span>
             </div>
-            <h3 class="font-bold text-base text-white">꼬마빌딩 밸류애드 (FIRE)</h3>
-            <p class="text-xs text-slate-400 mt-1">대출 70% 레버리지 + 구옥 상가 용도변경 & 리모델링</p>
+            <div>
+              <h3 class="font-black text-base text-white group-hover:text-blue-300 transition">꼬마빌딩 밸류애드 (FIRE)</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">대출 70% 레버리지 + 구옥 상가 용도변경 & 리모델링</p>
+            </div>
           </div>
           <div class="mt-4 pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
             <span class="text-slate-400">최종 목표</span>
-            <span class="text-blue-400 font-bold" id="card-target-income">월세 300만+ 사표</span>
+            <span class="text-blue-400 font-bold font-mono" id="card-target-income">월세 300만+ 사표</span>
           </div>
         </div>
+      </div>
 
       </div>
 
@@ -933,12 +954,14 @@
           </div>
 
           <div class="space-y-2 text-xs" id="crypto-cards">
-            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80 flex justify-between items-center hover:border-blue-500/40 transition">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center bg-blue-950/40 border border-blue-500/30 flex-shrink-0 p-1">
+                  <img src="./img/link.svg" alt="Chainlink" class="w-full h-full">
+                </div>
                 <div>
                   <div class="font-bold text-white">LINK (체인링크)</div>
-                  <div class="text-[10px] text-slate-500">RWA 오라클 표준</div>
+                  <div class="text-[10px] text-slate-400 font-mono">RWA 오라클 표준</div>
                 </div>
               </div>
               <div class="text-right tabular font-mono">
@@ -947,12 +970,14 @@
               </div>
             </div>
 
-            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80 flex justify-between items-center hover:border-amber-500/40 transition">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center bg-amber-950/40 border border-amber-500/30 flex-shrink-0 p-1">
+                  <img src="./img/ondo.svg" alt="Ondo Finance" class="w-full h-full">
+                </div>
                 <div>
                   <div class="font-bold text-white">ONDO (온도)</div>
-                  <div class="text-[10px] text-slate-500">미국 국채 토큰화</div>
+                  <div class="text-[10px] text-slate-400 font-mono">미국 국채 토큰화</div>
                 </div>
               </div>
               <div class="text-right tabular font-mono">
@@ -961,12 +986,14 @@
               </div>
             </div>
 
-            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80 flex justify-between items-center hover:border-rose-500/40 transition">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center bg-rose-950/40 border border-rose-500/30 flex-shrink-0 p-1">
+                  <img src="./img/render.svg" alt="Render" class="w-full h-full">
+                </div>
                 <div>
                   <div class="font-bold text-white">RENDER (렌더)</div>
-                  <div class="text-[10px] text-slate-500">애플 3D/AI GPU</div>
+                  <div class="text-[10px] text-slate-400 font-mono">애플 3D/AI GPU</div>
                 </div>
               </div>
               <div class="text-right tabular font-mono">
@@ -975,12 +1002,14 @@
               </div>
             </div>
 
-            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center">
-              <div class="flex items-center gap-2.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+            <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800/80 flex justify-between items-center hover:border-purple-500/40 transition">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center bg-purple-950/40 border border-purple-500/30 flex-shrink-0 p-1">
+                  <img src="./img/imx.svg" alt="ImmutableX" class="w-full h-full">
+                </div>
                 <div>
                   <div class="font-bold text-white">IMX (이뮤터블X)</div>
-                  <div class="text-[10px] text-slate-500">디즈니/게임 L2</div>
+                  <div class="text-[10px] text-slate-400 font-mono">디즈니/게임 L2</div>
                 </div>
               </div>
               <div class="text-right tabular font-mono">

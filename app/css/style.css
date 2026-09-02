@@ -1,9 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Pretendard:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg-main: #060911;
+  --card-bg: rgba(13, 19, 33, 0.78);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --gold-primary: #F59E0B;
+  --emerald-primary: #10B981;
+  --purple-primary: #8B5CF6;
+}
 
 body {
-  font-family: 'Pretendard', sans-serif;
-  background-color: #080C14;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-main);
   color: #F8FAFC;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 .gold-gradient-bg {
@@ -16,54 +30,93 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.emerald-gradient-text {
+  background: linear-gradient(135deg, #A7F3D0 0%, #10B981 50%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .card-glass {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
 .card-glass-hover {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-glass-hover:hover {
   border-color: rgba(245, 158, 11, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(245, 158, 11, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 35px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.12);
+}
+
+.card-visual-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-visual-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+}
+
+/* 3D Asset Floating Badge */
+.asset-3d-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 0 12px rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.card-glass-hover:hover .asset-3d-badge {
+  transform: scale(1.08) rotate(-2deg);
 }
 
 /* Nav Button Styles */
 .nav-pill-btn {
   position: relative;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-pill-btn.active {
   background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: #080C14;
+  color: #060911;
   font-weight: 800;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 18px rgba(245, 158, 11, 0.35);
 }
 
 .nav-pill-btn:not(.active) {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(13, 19, 33, 0.7);
   color: #94A3B8;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav-pill-btn:not(.active):hover {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(30, 41, 59, 0.85);
   color: #FFFFFF;
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
 }
 
 /* Securities Terminal Sliding Carousel (Zero Jitter & Butter Smooth) */
 .ticker-viewport {
-  height: 22px;
+  height: 24px;
   overflow: hidden;
   position: relative;
-  width: 175px;
+  width: 180px;
 }
 
 .ticker-slider {
@@ -75,7 +128,7 @@ body {
 
 .ticker-slider.sliding {
   transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
-  transform: translateY(-22px);
+  transform: translateY(-24px);
 }
 
 .ticker-slider.no-trans {
@@ -83,7 +136,7 @@ body {
 }
 
 .ticker-row {
-  height: 22px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -105,7 +158,7 @@ body {
 
 /* Smooth Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #080C14; }
+::-webkit-scrollbar-track { background: #060911; }
 ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
