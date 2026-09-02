@@ -51,7 +51,7 @@
   </script>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css">
-  <link rel="stylesheet" href="./css/style.css?v=4.0.0_makro_revamp">
+  <link rel="stylesheet" href="./css/style.css?v=4.1.0_dark_eye_friendly">
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-lime-300 selection:text-slate-950">
 
@@ -169,10 +169,10 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="font-black text-base sm:text-lg text-gray-900 tracking-tight">부의 나침반</h1>
-              <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 font-bold border border-amber-200 font-mono">PRO TERMINAL</span>
+              <h1 class="font-black text-base sm:text-lg text-white tracking-tight">부의 나침반</h1>
+              <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 font-bold border border-amber-500/30 font-mono">PRO TERMINAL</span>
             </div>
-            <p class="text-[10px] text-gray-500">직장인 10억 자산 & FIRE 종합 관제</p>
+            <p class="text-[10px] text-slate-400">직장인 10억 자산 & FIRE 종합 관제</p>
           </div>
         </div>
 
@@ -253,7 +253,7 @@
       <!-- Desktop Action Controls (Makro Style Get Started CTA) -->
       <div class="hidden md:flex items-center gap-2.5">
         <!-- VIP MEMBERSHIP CTA -->
-        <button onclick="openMembershipModal()" class="px-3.5 py-1.5 rounded-full bg-gray-900 hover:bg-gray-800 text-white border border-gray-800 flex items-center gap-2 text-xs font-bold transition shadow-sm active:scale-95 group">
+        <button onclick="openMembershipModal()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-white/15 flex items-center gap-2 text-xs font-bold transition shadow-sm active:scale-95 group">
           <span class="w-5 h-5 rounded-full bg-lime-400 text-slate-950 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition">
             <i data-lucide="arrow-right" class="w-3 h-3"></i>
           </span>
@@ -261,17 +261,17 @@
         </button>
 
         <!-- FINANCIAL OPEN API SYNC BUTTON -->
-        <button onclick="openApiBridgeModal()" id="btn-api-bridge" class="p-2 rounded-full bg-white hover:bg-gray-50 text-emerald-600 border border-gray-200 transition shadow-sm" title="API 연동">
+        <button onclick="openApiBridgeModal()" id="btn-api-bridge" class="p-2 rounded-full bg-white/8 hover:bg-white/12 text-emerald-400 border border-white/10 transition" title="API 연동">
           <i data-lucide="link-2" class="w-4 h-4"></i>
         </button>
 
         <!-- USER PROFILE SETTINGS BUTTON -->
-        <button onclick="openUserSettingsModal()" id="btn-settings" class="p-2 rounded-full bg-white hover:bg-gray-50 text-amber-600 border border-gray-200 transition shadow-sm" title="내 재정 설정">
+        <button onclick="openUserSettingsModal()" id="btn-settings" class="p-2 rounded-full bg-white/8 hover:bg-white/12 text-amber-400 border border-white/10 transition" title="내 재정 설정">
           <i data-lucide="user-cog" class="w-4 h-4"></i>
         </button>
 
         <!-- Refresh Button -->
-        <button onclick="refreshAllRealtimeData()" id="btn-refresh" class="p-2 rounded-full bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-gray-200 transition shadow-sm" title="실시간 갱신">
+        <button onclick="refreshAllRealtimeData()" id="btn-refresh" class="p-2 rounded-full bg-white/8 hover:bg-white/12 text-slate-400 hover:text-white border border-white/10 transition" title="실시간 갱신">
           <i data-lucide="refresh-cw" id="refresh-icon" class="w-4 h-4"></i>
         </button>
       </div>
@@ -402,15 +402,15 @@
         <div class="grid grid-cols-3 gap-2">
           <button onclick="applyProfilePreset('junior')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-xs transition">
             <div class="font-bold text-emerald-400">2030 사회초년생</div>
-            <div class="text-[10px] text-gray-500">시드 1,500만 / 연봉 4천</div>
+            <div class="text-[10px] text-slate-400">시드 1,500만 / 연봉 4천</div>
           </button>
           <button onclick="applyProfilePreset('standard')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-amber-500/40 rounded-xl text-left text-xs transition">
             <div class="font-bold text-amber-400">3040 정석 직장인</div>
-            <div class="text-[10px] text-gray-500">시드 5,000만 / 연봉 6.5천</div>
+            <div class="text-[10px] text-slate-400">시드 5,000만 / 연봉 6.5천</div>
           </button>
           <button onclick="applyProfilePreset('fire')" class="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left text-xs transition">
             <div class="font-bold text-purple-400">조기 은퇴 가속형</div>
-            <div class="text-[10px] text-gray-500">시드 1.2억 / 연봉 9천</div>
+            <div class="text-[10px] text-slate-400">시드 1.2억 / 연봉 9천</div>
           </button>
         </div>
       </div>
@@ -725,19 +725,19 @@
             </div>
             <div class="space-y-1 text-[11px] text-gray-300 p-2.5 rounded-xl font-mono" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);">
               <div class="flex justify-between">
-                <span class="text-gray-500">LOC 1 (평단):</span>
+                <span class="text-slate-400">LOC 1 (평단):</span>
                 <span class="text-white font-bold" id="ai-order-tqqq-loc1">$65.00 에 0.5회</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">LOC 2 (+5%):</span>
+                <span class="text-slate-400">LOC 2 (+5%):</span>
                 <span class="text-emerald-400 font-bold" id="ai-order-tqqq-loc2">$65.62 에 0.5회</span>
               </div>
               <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
-                <span class="text-gray-500">목표 익절가:</span>
+                <span class="text-slate-400">목표 익절가:</span>
                 <span class="text-amber-400 font-bold" id="ai-order-tqqq-target">$71.50 (+10%)</span>
               </div>
             </div>
-            <p class="text-[10px] text-gray-500">키움/한투 앱에서 밤 11시 30분 LOC 2개 예약</p>
+            <p class="text-[10px] text-slate-400">키움/한투 앱에서 밤 11시 30분 LOC 2개 예약</p>
           </div>
 
           <!-- Order 2: Monthly Dividend Accumulation -->
@@ -750,19 +750,19 @@
             </div>
             <div class="space-y-1 text-[11px] text-gray-300 p-2.5 rounded-xl font-mono" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);">
               <div class="flex justify-between">
-                <span class="text-gray-500">매수 추천가:</span>
+                <span class="text-slate-400">매수 추천가:</span>
                 <span class="text-white font-bold">₩10,450 전후</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">추천 수량:</span>
+                <span class="text-slate-400">추천 수량:</span>
                 <span class="text-emerald-400 font-bold">약 47~48주</span>
               </div>
               <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
-                <span class="text-gray-500">예상 월배당:</span>
+                <span class="text-slate-400">예상 월배당:</span>
                 <span class="text-emerald-400 font-bold">+ ₩16,000 / 월 누적</span>
               </div>
             </div>
-            <p class="text-[10px] text-gray-500">연금저축/ISA 계좌에서 자동 매수</p>
+            <p class="text-[10px] text-slate-400">연금저축/ISA 계좌에서 자동 매수</p>
           </div>
 
           <!-- Order 3: Web3 Infrastructure DCA -->
@@ -775,19 +775,19 @@
             </div>
             <div class="space-y-1 text-[11px] text-gray-300 p-2.5 rounded-xl font-mono" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);">
               <div class="flex justify-between">
-                <span class="text-gray-500">1순위 추천:</span>
+                <span class="text-slate-400">1순위 추천:</span>
                 <span class="text-white font-bold">LINK ($15.24)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">2순위 추천:</span>
+                <span class="text-slate-400">2순위 추천:</span>
                 <span class="text-purple-300 font-bold">ONDO ($0.84)</span>
               </div>
               <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
-                <span class="text-gray-500">기관 자금 채택:</span>
+                <span class="text-slate-400">기관 자금 채택:</span>
                 <span class="text-emerald-400 font-bold">블랙록 BUIDL 수혜</span>
               </div>
             </div>
-            <p class="text-[10px] text-gray-500">업비트/빗썸에서 분할 적립</p>
+            <p class="text-[10px] text-slate-400">업비트/빗썸에서 분할 적립</p>
           </div>
 
           <!-- Order 4: Buffett Cash Shield / Bargain Hunting -->
@@ -800,19 +800,19 @@
             </div>
             <div class="space-y-1 text-[11px] text-gray-300 p-2.5 rounded-xl font-mono" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);">
               <div class="flex justify-between">
-                <span class="text-gray-500">현재 공포지수:</span>
+                <span class="text-slate-400">현재 공포지수:</span>
                 <span class="text-white font-bold" id="ai-order-fng-score">47점 (중립)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">발동 조건:</span>
+                <span class="text-slate-400">발동 조건:</span>
                 <span class="text-rose-400 font-bold">25점 이하 (극단 공포)</span>
               </div>
               <div class="flex justify-between border-t border-slate-800 pt-1 text-[10px]">
-                <span class="text-gray-500">대기 전략:</span>
+                <span class="text-slate-400">대기 전략:</span>
                 <span class="text-blue-400 font-bold">현금 & 배당 비축 유지</span>
               </div>
             </div>
-            <p class="text-[10px] text-gray-500">25점 진입 시 나스닥 지수 폭풍 매수</p>
+            <p class="text-[10px] text-slate-400">25점 진입 시 나스닥 지수 폭풍 매수</p>
           </div>
 
         </div>
@@ -823,7 +823,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="w-1 h-8 rounded-full" style="background:linear-gradient(180deg,#D4F038,#10B981);"></div>
-          <h2 class="text-xl font-black" style="color:#0D1117;">4대 투자 전략 엔진</h2>
+          <h2 class="text-xl font-black" style="color:#E8EAF0;">4대 투자 전략 엔진</h2>
           <span class="section-tag">Strategy Pillars</span>
         </div>
         <span class="text-xs font-mono" style="color:#9CA3AF;">클릭하여 전략 탭으로 이동 →</span>
@@ -836,19 +836,19 @@
         <div onclick="switchTab('plan1')" class="pillar-card p-5 flex flex-col justify-between group">
           <div class="space-y-3">
             <div class="flex justify-between items-start">
-              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-emerald-100 group-hover:scale-110 transition flex-shrink-0 bg-emerald-50">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-emerald-800/60 group-hover:scale-110 transition flex-shrink-0 bg-emerald-950/60">
                 <img src="./img/icon_dividend.jpg" alt="절세 월배당" class="w-full h-full object-cover">
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 border border-emerald-200">제안 01</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-950/80 text-emerald-400 border border-emerald-800">제안 01</span>
             </div>
             <div>
-              <h3 class="font-black text-base group-hover:text-emerald-600 transition" style="color:#0D1117;">절세 3대 계좌 & 월배당</h3>
-              <p class="text-xs mt-1 line-clamp-2" style="color:#6B7280;">연금저축 연 99만 환급 + 작년/올해 실제 월배당금 비교 & 12개월 캘린더</p>
+              <h3 class="font-black text-base group-hover:text-emerald-600 transition" style="color:#E8EAF0;">절세 3대 계좌 & 월배당</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">연금저축 연 99만 환급 + 작년/올해 실제 월배당금 비교 & 12개월 캘린더</p>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
-            <span class="text-gray-500">코어 자산</span>
-            <span class="font-bold font-mono text-emerald-600" id="card-ratio-core">70% 배분</span>
+          <div class="mt-4 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
+            <span class="text-slate-400">코어 자산</span>
+            <span class="font-bold font-mono text-emerald-400" id="card-ratio-core">70% 배분</span>
           </div>
         </div>
 
@@ -856,19 +856,19 @@
         <div onclick="switchTab('plan2')" class="pillar-card p-5 flex flex-col justify-between group">
           <div class="space-y-3">
             <div class="flex justify-between items-start">
-              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-amber-100 group-hover:scale-110 transition flex-shrink-0 bg-amber-50">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-amber-800/60 group-hover:scale-110 transition flex-shrink-0 bg-amber-950/60">
                 <img src="./img/icon_infinite.jpg" alt="5분 무한매수" class="w-full h-full object-cover">
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 border border-amber-200">제안 02</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-950/80 text-amber-400 border border-amber-800">제안 02</span>
             </div>
             <div>
-              <h3 class="font-black text-base group-hover:text-amber-600 transition" style="color:#0D1117;">5분 무한매수 & 공포지수</h3>
-              <p class="text-xs mt-1 line-clamp-2" style="color:#6B7280;">라오어 TQQQ 40분할 LOC 주문 + CNN 공포지수 25 이하 줍줍</p>
+              <h3 class="font-black text-base group-hover:text-amber-600 transition" style="color:#E8EAF0;">5분 무한매수 & 공포지수</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">라오어 TQQQ 40분할 LOC 주문 + CNN 공포지수 25 이하 줍줍</p>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
-            <span class="text-gray-500">알파 수익</span>
-            <span class="font-bold font-mono text-amber-600" id="card-ratio-alpha">20% 배분</span>
+          <div class="mt-4 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
+            <span class="text-slate-400">알파 수익</span>
+            <span class="font-bold font-mono text-amber-400" id="card-ratio-alpha">20% 배분</span>
           </div>
         </div>
 
@@ -876,19 +876,19 @@
         <div onclick="switchTab('plan3')" class="pillar-card p-5 flex flex-col justify-between group">
           <div class="space-y-3">
             <div class="flex justify-between items-start">
-              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-purple-100 group-hover:scale-110 transition flex-shrink-0 bg-purple-50">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-purple-800/60 group-hover:scale-110 transition flex-shrink-0 bg-purple-950/60">
                 <img src="./img/icon_web3.jpg" alt="RWA 독점 인프라" class="w-full h-full object-cover">
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-100 text-purple-700 border border-purple-200">제안 03</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-950/80 text-purple-400 border border-purple-800">제안 03</span>
             </div>
             <div>
-              <h3 class="font-black text-base group-hover:text-purple-600 transition" style="color:#0D1117;">RWA & NFT 독점 인프라</h3>
-              <p class="text-xs mt-1 line-clamp-2" style="color:#6B7280;">블랙록 연동 ONDO, SWIFT 표준 LINK, 애플 GPU RENDER</p>
+              <h3 class="font-black text-base group-hover:text-purple-600 transition" style="color:#E8EAF0;">RWA & NFT 독점 인프라</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">블랙록 연동 ONDO, SWIFT 표준 LINK, 애플 GPU RENDER</p>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
-            <span class="text-gray-500">미래 엔진</span>
-            <span class="font-bold font-mono text-purple-600" id="card-ratio-web3">10% 배분</span>
+          <div class="mt-4 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
+            <span class="text-slate-400">미래 엔진</span>
+            <span class="font-bold font-mono text-purple-400" id="card-ratio-web3">10% 배분</span>
           </div>
         </div>
 
@@ -896,19 +896,19 @@
         <div onclick="switchTab('plan4')" class="pillar-card p-5 flex flex-col justify-between group">
           <div class="space-y-3">
             <div class="flex justify-between items-start">
-              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-blue-100 group-hover:scale-110 transition flex-shrink-0 bg-blue-50">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-md border border-blue-800/60 group-hover:scale-110 transition flex-shrink-0 bg-blue-950/60">
                 <img src="./img/icon_building.jpg" alt="꼬마빌딩 밸류애드" class="w-full h-full object-cover">
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 border border-blue-200">제안 04</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-950/80 text-blue-400 border border-blue-800">제안 04</span>
             </div>
             <div>
-              <h3 class="font-black text-base group-hover:text-blue-600 transition" style="color:#0D1117;">꼬마빌딩 밸류애드 (FIRE)</h3>
-              <p class="text-xs mt-1 line-clamp-2" style="color:#6B7280;">대출 70% 레버리지 + 구옥 상가 용도변경 & 리모델링</p>
+              <h3 class="font-black text-base group-hover:text-blue-600 transition" style="color:#E8EAF0;">꼬마빌딩 밸류애드 (FIRE)</h3>
+              <p class="text-xs text-slate-400 mt-1 line-clamp-2">대출 70% 레버리지 + 구옥 상가 용도변경 & 리모델링</p>
             </div>
           </div>
-          <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs">
-            <span class="text-gray-500">최종 목표</span>
-            <span class="font-bold font-mono text-blue-600" id="card-target-income">월세 300만+ 사표</span>
+          <div class="mt-4 pt-3 border-t border-white/8 flex justify-between items-center text-xs">
+            <span class="text-slate-400">최종 목표</span>
+            <span class="font-bold font-mono text-blue-400" id="card-target-income">월세 300만+ 사표</span>
           </div>
         </div>
       </div>
@@ -918,7 +918,7 @@
       <!-- Section Label: Market Intelligence -->
       <div class="flex items-center gap-3">
         <div class="w-1 h-8 rounded-full" style="background:linear-gradient(180deg,#F59E0B,#EF4444);"></div>
-        <h2 class="text-xl font-black" style="color:#0D1117;">시장 심리 &amp; 실시간 시세</h2>
+        <h2 class="text-xl font-black" style="color:#E8EAF0;">시장 심리 &amp; 실시간 시세</h2>
         <span class="section-tag">Market Intelligence</span>
       </div>
 
@@ -1122,7 +1122,7 @@
       <!-- Section Label: Wealth Gurus -->
       <div class="flex items-center gap-3">
         <div class="w-1 h-8 rounded-full" style="background:linear-gradient(180deg,#F59E0B,#D97706);"></div>
-        <h2 class="text-xl font-black" style="color:#0D1117;">월가 3대 거장 포트폴리오</h2>
+        <h2 class="text-xl font-black" style="color:#E8EAF0;">월가 3대 거장 포트폴리오</h2>
         <span class="section-tag">Wealth Gurus</span>
       </div>
 
@@ -1478,11 +1478,11 @@
 
                 <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
                   <div class="flex justify-between text-xs">
-                    <span class="text-gray-500">월 예상 수령액:</span>
+                    <span class="text-slate-400">월 예상 수령액:</span>
                     <span class="text-emerald-400 font-mono font-bold text-sm" id="res-monthly-dividend">₩ 229,166원 / 월</span>
                   </div>
                   <div class="flex justify-between text-xs pt-1 border-t border-slate-800">
-                    <span class="text-gray-500">10년 후 복리 월배당:</span>
+                    <span class="text-slate-400">10년 후 복리 월배당:</span>
                     <span class="text-purple-300 font-mono font-bold text-sm" id="res-year10-dividend">₩ 594,400원 / 월</span>
                   </div>
                 </div>
@@ -1492,7 +1492,7 @@
             <div class="lg:col-span-7 flex flex-col justify-between">
               <div class="flex justify-between items-center mb-2">
                 <h4 class="font-bold text-white text-xs">15개년 장기 복리 성장 곡선 (Snowball Effect)</h4>
-                <span class="text-[10px] text-gray-500">단위: 만원/월</span>
+                <span class="text-[10px] text-slate-400">단위: 만원/월</span>
               </div>
               <div class="min-h-[190px] h-[200px] relative bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80">
                 <canvas id="dividendGrowthChart"></canvas>
@@ -1520,7 +1520,7 @@
               </select>
             </div>
             <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 flex flex-col justify-center text-center">
-              <div class="text-[10px] text-gray-500">내 통장에 꽂히는 13월의 환급액</div>
+              <div class="text-[10px] text-slate-400">내 통장에 꽂히는 13월의 환급액</div>
               <div class="text-2xl font-black text-emerald-400 tabular" id="tax-refund-display">₩ 990,000</div>
             </div>
           </div>
@@ -1568,15 +1568,15 @@
 
             <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2 text-xs">
               <div class="flex justify-between">
-                <span class="text-gray-500">1회차 매수액 (1/40):</span>
+                <span class="text-slate-400">1회차 매수액 (1/40):</span>
                 <span class="text-amber-400 font-bold" id="inf-round-val">₩ 250,000 (약 $185)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">오늘 밤 LOC 1매수 (내 평단):</span>
+                <span class="text-slate-400">오늘 밤 LOC 1매수 (내 평단):</span>
                 <span class="text-white font-bold font-mono" id="inf-loc1-val">$65.00 에 0.5회분</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-gray-500">오늘 밤 LOC 2매수 (현재가+5%):</span>
+                <span class="text-slate-400">오늘 밤 LOC 2매수 (현재가+5%):</span>
                 <span class="text-white font-bold font-mono" id="inf-loc2-val">$65.62 에 0.5회분</span>
               </div>
               <div class="flex justify-between pt-2 border-t border-slate-800 text-sm">
@@ -1594,28 +1594,28 @@
               <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
                 <div>
                   <div class="font-bold text-white">CNN Fear & Greed Index (주식)</div>
-                  <div class="text-gray-500">25 이하: 바겐세일 분할 매수</div>
+                  <div class="text-slate-400">25 이하: 바겐세일 분할 매수</div>
                 </div>
                 <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
               </a>
               <a href="https://kr.investing.com/indices/volatility-s-p-500" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
                 <div>
                   <div class="font-bold text-white">VIX (변동성 공포지수)</div>
-                  <div class="text-gray-500">30 돌파 시 시장 패닉 저점 신호</div>
+                  <div class="text-slate-400">30 돌파 시 시장 패닉 저점 신호</div>
                 </div>
                 <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
               </a>
               <a href="https://www.currentmarketvaluation.com/models/buffett-indicator.php" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
                 <div>
                   <div class="font-bold text-white">버핏 지수 (Buffett Indicator)</div>
-                  <div class="text-gray-500">GDP 대비 시가총액 과열도 측정</div>
+                  <div class="text-slate-400">GDP 대비 시가총액 과열도 측정</div>
                 </div>
                 <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
               </a>
               <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" class="p-3.5 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center hover:border-amber-500/50 transition">
                 <div>
                   <div class="font-bold text-white">CME FedWatch</div>
-                  <div class="text-gray-500">다음 FOMC 기준금리 인하 확률</div>
+                  <div class="text-slate-400">다음 FOMC 기준금리 인하 확률</div>
                 </div>
                 <i data-lucide="external-link" class="w-4 h-4 text-amber-400"></i>
               </a>
@@ -1742,22 +1742,22 @@
             <h3 class="font-bold text-white text-base">스트레스 테스트 & 순수익 산출표</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                <div class="text-gray-500">필요한 순수 실투자금 (내 돈):</div>
+                <div class="text-slate-400">필요한 순수 실투자금 (내 돈):</div>
                 <div class="text-2xl font-black text-amber-400 mt-1 tabular" id="res-seed-pro">₩ 1억 2,300만원</div>
                 <div class="text-[10px] text-slate-500 mt-0.5">취등록세(4.6%) 약 2,300만원 포함</div>
               </div>
               <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                <div class="text-gray-500">은행 대출 원금:</div>
+                <div class="text-slate-400">은행 대출 원금:</div>
                 <div class="text-2xl font-black text-white mt-1 tabular" id="res-loan-pro">₩ 3억 5,000만원</div>
                 <div class="text-[10px] text-slate-500 mt-0.5">매매가의 70% 기준</div>
               </div>
               <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                <div class="text-gray-500">월 대출 이자 (5.5% 기준):</div>
+                <div class="text-slate-400">월 대출 이자 (5.5% 기준):</div>
                 <div class="text-2xl font-black text-rose-400 mt-1 tabular" id="res-interest-pro">- ₩ 160.4만원</div>
                 <div class="text-[10px] text-slate-500 mt-0.5">매달 나가는 고정 금융비용</div>
               </div>
               <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                <div class="text-gray-500">이자 빼고 남는 '순 현금흐름':</div>
+                <div class="text-slate-400">이자 빼고 남는 '순 현금흐름':</div>
                 <div class="text-2xl font-black text-emerald-400 mt-1 tabular" id="res-net-pro">+ ₩ 119.6만원 / 월</div>
                 <div class="text-[10px] text-emerald-500/80 mt-0.5">순수익 플러스 (역마진 방어 성공!)</div>
               </div>
@@ -1839,7 +1839,7 @@
               </div>
 
               <div class="flex flex-wrap items-center gap-4 text-xs pt-1">
-                <span class="text-gray-500">추천 대응 전략:</span>
+                <span class="text-slate-400">추천 대응 전략:</span>
                 <span class="px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">월배당 ETF 비중 유지</span>
                 <span class="px-2.5 py-1 rounded-lg bg-amber-950 text-amber-400 border border-amber-800 font-bold">TQQQ 40분할 원칙 준수</span>
               </div>
@@ -1865,7 +1865,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">빅테크 호재 🟢</span>
-              <span class="text-[10px] text-gray-500">거시경제</span>
+              <span class="text-[10px] text-slate-400">거시경제</span>
             </div>
           </div>
 
@@ -1883,7 +1883,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">월배당 호재 🟢</span>
-              <span class="text-[10px] text-gray-500">주식 & ETF</span>
+              <span class="text-[10px] text-slate-400">주식 & ETF</span>
             </div>
           </div>
 
@@ -1901,7 +1901,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">RWA 대형 호재 🟢</span>
-              <span class="text-[10px] text-gray-500">웹3 & 가상자산</span>
+              <span class="text-[10px] text-slate-400">웹3 & 가상자산</span>
             </div>
           </div>
 
@@ -1919,7 +1919,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">밸류애드 유효 🔵</span>
-              <span class="text-[10px] text-gray-500">부동산</span>
+              <span class="text-[10px] text-slate-400">부동산</span>
             </div>
           </div>
 
@@ -1937,7 +1937,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">NFT/AI 호재 🟢</span>
-              <span class="text-[10px] text-gray-500">웹3 & GPU</span>
+              <span class="text-[10px] text-slate-400">웹3 & GPU</span>
             </div>
           </div>
 
@@ -1955,7 +1955,7 @@
             </div>
             <div class="pt-3 border-t border-slate-800 flex justify-between items-center text-xs">
               <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">절세 전략 🟢</span>
-              <span class="text-[10px] text-gray-500">절세 & 세제</span>
+              <span class="text-[10px] text-slate-400">절세 & 세제</span>
             </div>
           </div>
 
@@ -2042,7 +2042,7 @@
   <!-- ========================================== -->
   <!-- 6. FOOTER -->
   <!-- ========================================== -->
-  <footer class="border-t py-6 mb-14 md:mb-0 text-center text-xs" style="background:#1B2438;border-color:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);">
+  <footer class="border-t py-6 mb-14 md:mb-0 text-center text-xs" style="background:#0D1219;border-color:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div class="flex items-center gap-2">
         <span class="font-black text-white">Wealth Compass</span>
@@ -2056,28 +2056,28 @@
   <!-- ========================================== -->
   <!-- 7. MOBILE BOTTOM FLOATING APP DOCK -->
   <!-- ========================================== -->
-  <div id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 px-2 py-2 flex justify-around items-center text-[10px] shadow-2xl safe-area-bottom" style="background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,0.08);">
-    <button onclick="switchTab('overview')" class="flex flex-col items-center gap-1 font-bold p-1" style="color:#D97706;">
+  <div id="mobile-bottom-dock" class="md:hidden fixed bottom-0 left-0 right-0 z-40 px-2 py-2 flex justify-around items-center text-[10px] shadow-2xl safe-area-bottom" style="background:rgba(15,18,25,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);">
+    <button onclick="switchTab('overview')" class="flex flex-col items-center gap-1 text-amber-400 font-bold p-1">
       <i data-lucide="layout-grid" class="w-4 h-4"></i>
       <span>관제탑</span>
     </button>
-    <button onclick="switchTab('plan1')" class="flex flex-col items-center gap-1 p-1" style="color:#9CA3AF;">
+    <button onclick="switchTab('plan1')" class="flex flex-col items-center gap-1 text-slate-400 p-1">
       <i data-lucide="shield-check" class="w-4 h-4"></i>
       <span>월배당</span>
     </button>
-    <button onclick="switchTab('plan2')" class="flex flex-col items-center gap-1 p-1" style="color:#9CA3AF;">
+    <button onclick="switchTab('plan2')" class="flex flex-col items-center gap-1 text-slate-400 p-1">
       <i data-lucide="zap" class="w-4 h-4"></i>
       <span>무한매수</span>
     </button>
-    <button onclick="switchTab('plan3')" class="flex flex-col items-center gap-1 p-1" style="color:#9CA3AF;">
+    <button onclick="switchTab('plan3')" class="flex flex-col items-center gap-1 text-slate-400 p-1">
       <i data-lucide="layers" class="w-4 h-4"></i>
       <span>웹3</span>
     </button>
-    <button onclick="switchTab('news')" class="flex flex-col items-center gap-1 p-1" style="color:#9CA3AF;">
+    <button onclick="switchTab('news')" class="flex flex-col items-center gap-1 text-slate-400 p-1">
       <i data-lucide="newspaper" class="w-4 h-4"></i>
       <span>경제뉴스</span>
     </button>
-    <button onclick="switchTab('vault')" class="flex flex-col items-center gap-1 p-1" style="color:#9CA3AF;">
+    <button onclick="switchTab('vault')" class="flex flex-col items-center gap-1 text-slate-400 p-1">
       <i data-lucide="book-open" class="w-4 h-4"></i>
       <span>지식</span>
     </button>
@@ -2086,16 +2086,18 @@
   <!-- ========================================== -->
   <!-- 8. MODULAR SCRIPT ARCHITECTURE -->
   <!-- ========================================== -->
-  <script src="./js/ticker.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/state.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/api.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/calculators.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/ui.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/news.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/vault.js?v=4.0.0_makro_revamp"></script>
-  <script src="./js/main.js?v=4.0.0_makro_revamp"></script>
+  <script src="./js/ticker.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/state.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/api.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/calculators.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/ui.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/news.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/vault.js?v=4.1.0_dark_eye_friendly"></script>
+  <script src="./js/main.js?v=4.1.0_dark_eye_friendly"></script>
 </body>
 </html>
+
+
 
 
 
