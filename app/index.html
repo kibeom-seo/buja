@@ -51,7 +51,7 @@
   </script>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css">
-  <link rel="stylesheet" href="./css/style.css?v=3.2.0_dropdown_bridge_fix">
+  <link rel="stylesheet" href="./css/style.css?v=3.3.0_clean_financial_api">
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950">
 
@@ -305,7 +305,7 @@
       </div>
 
       <!-- Supported Institutions Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
         
         <!-- [1] 한국투자증권 (KIS Developers) -->
         <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
@@ -314,7 +314,7 @@
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <h4 class="font-black text-white text-sm">한국투자증권 (KIS)</h4>
             </div>
-            <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">증권</span>
+            <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold">REST API</span>
           </div>
           <p class="text-[11px] text-slate-400 leading-relaxed">
             국내/해외주식, 연금저축, ISA 계좌의 실시간 예수금 및 보유 ETF 평가액 자동 조회
@@ -322,7 +322,7 @@
           <div class="space-y-2">
             <input type="text" id="api-kis-appkey" placeholder="KIS AppKey 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
             <input type="password" id="api-kis-appsecret" placeholder="KIS AppSecret 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
-            <input type="text" id="api-kis-account" placeholder="계좌번호 8자리" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
+            <input type="text" id="api-kis-account" placeholder="계좌번호 8자리 (예: 12345678-01)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
           </div>
         </div>
 
@@ -333,7 +333,7 @@
               <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
               <h4 class="font-black text-white text-sm">업비트 (Upbit)</h4>
             </div>
-            <span class="text-[10px] text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">가상자산</span>
+            <span class="text-[10px] text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-800 font-bold">REST API</span>
           </div>
           <p class="text-[11px] text-slate-400 leading-relaxed">
             업비트 원화 예수금 및 보유 코인(LINK, RENDER, IMX 등) 실시간 수량/평가액 자동 동기화
@@ -341,26 +341,6 @@
           <div class="space-y-2">
             <input type="text" id="api-upbit-access" placeholder="Upbit Access Key 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
             <input type="password" id="api-upbit-secret" placeholder="Upbit Secret Key 입력" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
-          </div>
-        </div>
-
-        <!-- [3] 구글 AI 스튜디오 (Google AI Studio Gemini API) -->
-        <div class="p-4 bg-slate-950 rounded-2xl border border-amber-500/40 space-y-3 shadow-lg">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-              <h4 class="font-black text-white text-sm">구글 AI 스튜디오</h4>
-            </div>
-            <span class="text-[10px] text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-800 font-bold">Gemini 1.5</span>
-          </div>
-          <p class="text-[11px] text-slate-400 leading-relaxed">
-            실시간 거시경제 분석, 당일 실전 매매 전략 생성, 외신 3줄 요약 AI 엔진 가동
-          </p>
-          <div class="space-y-2">
-            <input type="password" id="api-gemini-key" placeholder="AI Studio API Key (AIzaSy...)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono text-[11px]">
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-[11px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 underline pt-1">
-              <i data-lucide="external-link" class="w-3 h-3"></i> 무료 API Key 발급받기 (1분 소요)
-            </a>
           </div>
         </div>
 
@@ -2082,13 +2062,13 @@
   <!-- ========================================== -->
   <!-- 8. MODULAR SCRIPT ARCHITECTURE -->
   <!-- ========================================== -->
-  <script src="./js/ticker.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/state.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/api.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/calculators.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/ui.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/news.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/vault.js?v=3.2.0_dropdown_bridge_fix"></script>
-  <script src="./js/main.js?v=3.2.0_dropdown_bridge_fix"></script>
+  <script src="./js/ticker.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/state.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/api.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/calculators.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/ui.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/news.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/vault.js?v=3.3.0_clean_financial_api"></script>
+  <script src="./js/main.js?v=3.3.0_clean_financial_api"></script>
 </body>
 </html>

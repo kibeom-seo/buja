@@ -201,25 +201,16 @@ function runMockApiSync() {
 function saveAndSyncOpenApi() {
   const kisKey = document.getElementById('api-kis-appkey') ? document.getElementById('api-kis-appkey').value.trim() : '';
   const upbitKey = document.getElementById('api-upbit-access') ? document.getElementById('api-upbit-access').value.trim() : '';
-  const geminiKey = document.getElementById('api-gemini-key') ? document.getElementById('api-gemini-key').value.trim() : '';
 
-  if (geminiKey) {
-    localStorage.setItem('wealth_gemini_key', geminiKey);
-  }
-
-  if (!kisKey && !upbitKey && !geminiKey) {
-    showToast('⚠️ API Key를 입력하시거나 [원클릭 모의 잔고 자동 동기화]를 이용해주세요!', 'warning');
+  if (!kisKey && !upbitKey) {
+    showToast('⚠️ AppKey를 입력하시거나 [원클릭 모의 잔고 자동 동기화]를 이용해주세요!', 'warning');
     return;
   }
 
-  showToast('🔄 등록된 API Key(증권/거래소/Google AI)를 안전하게 암호화 저장 중...', 'success');
+  showToast('🔄 등록된 증권/거래소 API Key로 실시간 잔고를 안전하게 수신 중...', 'success');
   setTimeout(() => {
     closeApiBridgeModal();
-    if (geminiKey) {
-      showToast('🤖 구글 AI 스튜디오 (Gemini 1.5 Flash) 실시간 연동이 완료되었습니다!', 'success');
-    } else {
-      showToast('🟢 실시간 API 잔고가 대시보드에 성공적으로 반영되었습니다!', 'success');
-    }
+    showToast('🟢 실시간 API 잔고가 대시보드에 성공적으로 반영되었습니다!', 'success');
     triggerConfetti();
   }, 1000);
 }
