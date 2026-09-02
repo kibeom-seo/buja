@@ -1,215 +1,225 @@
-@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+﻿@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
+
+/* ============================================================
+   WEALTH COMPASS v4.0 — MAKRO FINTECH HYBRID DESIGN
+   Light Gray Page + White Cards + Deep Navy Dark Cards + Lime
+   ============================================================ */
 
 :root {
-  /* Modern Clean Fintech & Makro Dark Palette */
-  --bg-main: #0B0F19;
-  --bg-secondary: #0F1626;
-  --card-bg: rgba(18, 26, 43, 0.82);
-  --card-hover-bg: rgba(24, 34, 56, 0.92);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-border-hover: rgba(212, 240, 56, 0.35);
-  
-  /* Electric Accents */
-  --lime-electric: #D4F038;
-  --gold-soft: #F1C40F;
-  --mint-soft: #2ECC71;
-  --blue-soft: #5DADE2;
-  --purple-soft: #AF7AC5;
-  
-  /* Text Hierarchy */
-  --text-primary: #EDF2F7;
-  --text-secondary: #A0AEC0;
-  --text-muted: #718096;
+  --bg-page:       #ECEEF5;
+  --bg-section:    #F4F6FB;
+  --card-white:    #FFFFFF;
+  --card-dark:     #131827;
+  --card-dark-sub: #1C2438;
+  --lime:          #D4F038;
+  --lime-dark:     #AEEA00;
+  --text-dark:     #0D1117;
+  --text-mid:      #374151;
+  --text-muted:    #6B7280;
+  --text-light:    #9CA3AF;
+  --border-light:  rgba(0,0,0,0.08);
+  --border-dark:   rgba(255,255,255,0.08);
+  --shadow-sm:     0 2px 12px rgba(0,0,0,0.08);
+  --shadow-card:   0 4px 24px -4px rgba(0,0,0,0.12);
+  --shadow-dark:   0 8px 32px -6px rgba(0,0,0,0.55);
+  --radius-card:   20px;
+  --radius-pill:   9999px;
 }
 
-html {
-  font-size: 15px; /* Boost base scale from 14px to 15px */
-}
+html { font-size: 15px; scroll-behavior: smooth; }
 
 body {
-  font-family: 'Spoqa Han Sans Neo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  font-family: 'Spoqa Han Sans Neo', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
+  letter-spacing: -0.015em;
   line-height: 1.6;
-  background-image: 
-    radial-gradient(circle at 10% 10%, rgba(212, 240, 56, 0.03) 0%, transparent 45%),
-    radial-gradient(circle at 90% 15%, rgba(46, 204, 113, 0.025) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(93, 173, 226, 0.02) 0%, transparent 50%);
-  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Enforce Minimum Readable Font Size (No tiny unreadable text) */
-.text-\[9px\], .text-\[10px\] {
-  font-size: 12px !important;
-  line-height: 1.4 !important;
-}
+/* Typography Minimum Scale */
+.text-\[9px\], .text-\[10px\] { font-size: 12px !important; line-height: 1.4 !important; }
+.text-\[11px\] { font-size: 13px !important; line-height: 1.45 !important; }
 
-.text-\[11px\] {
-  font-size: 13px !important;
-  line-height: 1.45 !important;
-}
-
-/* Makro Style Electric Lime & Gold Gradients */
-.gold-gradient-bg {
-  background: linear-gradient(135deg, #F39C12 0%, #D68910 100%);
-}
-
-.lime-gradient-bg {
-  background: linear-gradient(135deg, #E6F94A 0%, #D4F038 100%);
-  color: #0B0F19;
-}
-
-.gold-gradient-text {
-  background: linear-gradient(135deg, #F9E79F 0%, #F5B041 50%, #EB984E 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+/* Gradient Utilities */
+.lime-gradient-bg { background: linear-gradient(135deg, #E6F94A 0%, #D4F038 100%); color: #0D1117; }
+.gold-gradient-bg { background: linear-gradient(135deg, #F39C12 0%, #D68910 100%); }
 
 .lime-gradient-text {
-  background: linear-gradient(135deg, #F4FF81 0%, #D4F038 60%, #AEEA00 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(135deg, #c8e600 0%, #d4f038 60%, #a8cc00 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
-
+.gold-gradient-text {
+  background: linear-gradient(135deg, #F9E79F 0%, #F5B041 50%, #EB984E 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
 .emerald-gradient-text {
   background: linear-gradient(135deg, #A9DFBF 0%, #52BE80 50%, #27AE60 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
-/* Makro Inspired Frosted Glass Bento Cards */
-.card-glass {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.45);
+/* Header — Light frosted glass bar */
+header {
+  background: rgba(255,255,255,0.90) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.07) !important;
+  box-shadow: 0 1px 16px rgba(0,0,0,0.06) !important;
 }
 
-.card-glass-hover {
-  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-glass-hover:hover {
-  background: var(--card-hover-bg);
-  border-color: var(--card-border-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.55), 0 0 16px rgba(212, 240, 56, 0.1);
-}
-
-/* Soft 3D Asset Badge */
-.asset-3d-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  flex-shrink: 0;
-  transition: transform 0.28s ease;
-}
-
-.card-glass-hover:hover .asset-3d-badge {
-  transform: scale(1.05);
-}
-
-/* Minimalist Clean Text Navigation (Exact Reference Image Style) */
+/* Navigation — Dark text on light header */
 .nav-pill-btn {
   background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: #94A3B8;
+  border: none !important; box-shadow: none !important;
+  color: #4B5563;
   font-family: 'Inter', 'Spoqa Han Sans Neo', sans-serif;
-  font-size: 14.5px;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 9999px;
-  transition: all 0.2s ease;
-  position: relative;
-  cursor: pointer;
+  font-size: 14.5px; font-weight: 500;
+  padding: 8px 14px; border-radius: 9999px;
+  transition: all 0.2s ease; position: relative; cursor: pointer;
 }
-
-.nav-pill-btn:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.06) !important;
-}
-
-.nav-pill-btn.active {
-  color: #FFFFFF;
-  font-weight: 700;
-  background: rgba(255, 255, 255, 0.09) !important;
-}
-
+.nav-pill-btn:hover { color: #0D1117; background: rgba(0,0,0,0.05) !important; }
+.nav-pill-btn.active { color: #0D1117; font-weight: 700; background: rgba(0,0,0,0.07) !important; }
 .nav-pill-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0px;
-  left: 14px;
-  right: 14px;
-  height: 2px;
-  background: #D4F038;
-  border-radius: 9999px;
-  box-shadow: 0 0 8px rgba(212, 240, 56, 0.7);
+  content: ''; position: absolute; bottom: 0; left: 14px; right: 14px;
+  height: 2px; background: var(--lime); border-radius: 9999px;
+  box-shadow: 0 0 8px rgba(212,240,56,0.9);
 }
 
-/* Securities Terminal Sliding Carousel */
-.ticker-viewport {
-  height: 26px;
-  overflow: hidden;
-  position: relative;
-  width: 190px;
+/* Ticker Bar */
+.ticker-viewport { height: 26px; overflow: hidden; position: relative; width: 190px; }
+.ticker-slider { display: flex; flex-direction: column; transform: translateY(0); will-change: transform; }
+.ticker-slider.sliding { transition: transform 0.65s cubic-bezier(0.25,1,0.5,1); transform: translateY(-26px); }
+.ticker-slider.no-trans { transition: none !important; }
+.ticker-row { height: 26px; display: flex; align-items: center; justify-content: space-between; width: 100%; font-size: 13px; }
+
+/* White Cards */
+.card-white {
+  background: var(--card-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+.card-white:hover { transform: translateY(-3px); box-shadow: 0 16px 48px -8px rgba(0,0,0,0.18); }
+
+/* Dark Cards */
+.card-dark {
+  background: var(--card-dark);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-dark);
+  color: #F0F2F8;
+  transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+}
+.card-dark:hover { transform: translateY(-2px); border-color: rgba(212,240,56,0.28); box-shadow: 0 16px 48px -8px rgba(0,0,0,0.65), 0 0 20px rgba(212,240,56,0.08); }
+
+/* Legacy card-glass (inner tab views) */
+.card-glass {
+  background: var(--card-dark);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-dark); box-shadow: var(--shadow-dark);
+}
+.card-glass-hover { transition: all 0.28s cubic-bezier(0.16,1,0.3,1); }
+.card-glass-hover:hover { border-color: rgba(212,240,56,0.35); transform: translateY(-2px); box-shadow: 0 14px 30px -8px rgba(0,0,0,0.55), 0 0 16px rgba(212,240,56,0.1); }
+.card-glass-hover:hover .asset-3d-badge { transform: scale(1.05); }
+
+.asset-3d-badge {
+  width: 48px; height: 48px; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 6px 14px -3px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; transition: transform 0.28s ease;
 }
 
-.ticker-slider {
-  display: flex;
-  flex-direction: column;
-  transform: translateY(0);
-  will-change: transform;
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #131827 0%, #1B2438 55%, #0D1117 100%);
+  border-radius: 28px; overflow: hidden; position: relative;
+  box-shadow: 0 12px 48px -8px rgba(0,0,0,0.4);
+}
+.hero-section::before {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(212,240,56,0.14) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-section::after {
+  content: ''; position: absolute; bottom: -60px; left: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(46,204,113,0.07) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.ticker-slider.sliding {
-  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
-  transform: translateY(-26px);
+/* Stat Cards */
+.stat-card {
+  background: var(--card-white); border: 1px solid var(--border-light);
+  border-radius: 16px; padding: 20px;
+  box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.14); }
+
+/* Pillar Strategy Cards */
+.pillar-card {
+  background: var(--card-white); border: 1px solid var(--border-light);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-card);
+  cursor: pointer; transition: all 0.28s cubic-bezier(0.16,1,0.3,1);
+  overflow: hidden; position: relative;
+}
+.pillar-card-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.pillar-card:hover { transform: translateY(-5px); box-shadow: 0 20px 56px -8px rgba(0,0,0,0.22); }
+.pillar-card h3 { color: #0D1117; }
+.pillar-card p  { color: #6B7280; }
+
+/* Section Labels */
+.section-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 9999px;
+  background: rgba(212,240,56,0.18); border: 1px solid rgba(212,240,56,0.35);
+  color: #4a6400; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase;
 }
 
-.ticker-slider.no-trans {
-  transition: none !important;
+/* Strategies Dropdown — Light popup */
+#strategies-popover > div {
+  background: rgba(255,255,255,0.97) !important;
+  border: 1px solid rgba(0,0,0,0.1) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18) !important;
 }
+#strategies-popover button { color: #374151 !important; }
+#strategies-popover button:hover { background: rgba(0,0,0,0.05) !important; color: #0D1117 !important; }
+#strategies-popover .text-emerald-400 { color: #059669 !important; }
+#strategies-popover .text-amber-400 { color: #D97706 !important; }
+#strategies-popover .text-purple-400 { color: #7C3AED !important; }
+#strategies-popover .text-blue-400 { color: #2563EB !important; }
 
-.ticker-row {
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 13px;
-}
+/* Animations */
+@keyframes priceFlashGreen { 0% { background-color: rgba(46,204,113,0.2); color: #58D68D; } 100% { background-color: transparent; } }
+@keyframes priceFlashRed   { 0% { background-color: rgba(231,76,60,0.2);  color: #EC7063; } 100% { background-color: transparent; } }
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes priceFlashGreen {
-  0% { background-color: rgba(46, 204, 113, 0.25); color: #58D68D; }
-  100% { background-color: transparent; }
-}
-
-@keyframes priceFlashRed {
-  0% { background-color: rgba(231, 76, 60, 0.25); color: #EC7063; }
-  100% { background-color: transparent; }
-}
-
-.flash-up { animation: priceFlashGreen 0.8s ease-out; }
+.flash-up   { animation: priceFlashGreen 0.8s ease-out; }
 .flash-down { animation: priceFlashRed 0.8s ease-out; }
+.fade-slide { animation: fadeSlideUp 0.5s ease-out; }
 
-/* Soothing Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0B0F19; }
-::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #334155; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-.tabular { 
+/* Tabular numbers */
+.tabular {
   font-family: 'JetBrains Mono', 'Inter', monospace;
-  font-variant-numeric: tabular-nums; 
-  font-feature-settings: "tnum"; 
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Mobile Dock */
+.mobile-dock-bar {
+  background: rgba(255,255,255,0.95) !important;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
 }
