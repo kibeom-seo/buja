@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Soothing Warm Dark Palette (Low Eye Strain & Premium Finish) */
   --bg-main: #0B0F19;
   --bg-secondary: #0F1626;
-  --card-bg: rgba(18, 26, 43, 0.75);
-  --card-hover-bg: rgba(24, 34, 56, 0.85);
-  --card-border: rgba(255, 255, 255, 0.06);
-  --card-border-hover: rgba(245, 158, 11, 0.25);
+  --card-bg: rgba(18, 26, 43, 0.78);
+  --card-hover-bg: rgba(24, 34, 56, 0.88);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border-hover: rgba(245, 158, 11, 0.3);
   
   /* Soft Accent Colors (Subtle & Harmonic) */
   --gold-soft: #F1C40F;
@@ -17,17 +18,21 @@
   --purple-soft: #AF7AC5;
   
   /* Text Hierarchy */
-  --text-primary: #E6EDF5;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #EDF2F7;
+  --text-secondary: #A0AEC0;
+  --text-muted: #718096;
+}
+
+html {
+  font-size: 15px; /* Boost base scale from 14px to 15px */
 }
 
 body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Spoqa Han Sans Neo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-primary);
-  letter-spacing: -0.015em;
-  line-height: 1.55;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
   background-image: 
     radial-gradient(circle at 10% 10%, rgba(241, 196, 15, 0.025) 0%, transparent 45%),
     radial-gradient(circle at 90% 15%, rgba(46, 204, 113, 0.025) 0%, transparent 45%),
@@ -35,6 +40,17 @@ body {
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enforce Minimum Readable Font Size (No tiny unreadable text) */
+.text-\[9px\], .text-\[10px\] {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+.text-\[11px\] {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
 }
 
 /* Soothing Gradients */
@@ -76,12 +92,12 @@ body {
 
 /* Soft 3D Asset Badge */
 .asset-3d-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
   transition: transform 0.28s ease;
 }
@@ -95,6 +111,7 @@ body {
   position: relative;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   font-weight: 500;
+  font-size: 13.5px;
 }
 
 .nav-pill-btn.active {
@@ -106,23 +123,23 @@ body {
 
 .nav-pill-btn:not(.active) {
   background: rgba(18, 26, 43, 0.65);
-  color: #94A3B8;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #A0AEC0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .nav-pill-btn:not(.active):hover {
-  background: rgba(28, 40, 65, 0.8);
-  color: #F1F5F9;
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(28, 40, 65, 0.85);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
 
-/* Securities Terminal Sliding Carousel (Zero Jitter & Butter Smooth) */
+/* Securities Terminal Sliding Carousel */
 .ticker-viewport {
-  height: 24px;
+  height: 26px;
   overflow: hidden;
   position: relative;
-  width: 180px;
+  width: 190px;
 }
 
 .ticker-slider {
@@ -134,7 +151,7 @@ body {
 
 .ticker-slider.sliding {
   transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
-  transform: translateY(-24px);
+  transform: translateY(-26px);
 }
 
 .ticker-slider.no-trans {
@@ -142,11 +159,12 @@ body {
 }
 
 .ticker-row {
-  height: 24px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  font-size: 13px;
 }
 
 @keyframes priceFlashGreen {
@@ -163,9 +181,13 @@ body {
 .flash-down { animation: priceFlashRed 0.8s ease-out; }
 
 /* Soothing Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0B0F19; }
 ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-.tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.tabular { 
+  font-family: 'JetBrains Mono', 'Inter', monospace;
+  font-variant-numeric: tabular-nums; 
+  font-feature-settings: "tnum"; 
+}
