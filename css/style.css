@@ -117,32 +117,43 @@ body {
   transform: scale(1.05);
 }
 
-/* Nav Button Styles */
+/* Minimalist Clean Text Navigation (Exact Reference Image Style) */
 .nav-pill-btn {
-  position: relative;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #94A3B8;
+  font-family: 'Inter', 'Spoqa Han Sans Neo', sans-serif;
+  font-size: 14.5px;
   font-weight: 500;
-  font-size: 13.5px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.nav-pill-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .nav-pill-btn.active {
-  background: linear-gradient(135deg, #F39C12 0%, #D68910 100%);
-  color: #0B0F19;
-  font-weight: 700;
-  box-shadow: 0 3px 14px rgba(243, 156, 18, 0.28);
-}
-
-.nav-pill-btn:not(.active) {
-  background: rgba(18, 26, 43, 0.65);
-  color: #A0AEC0;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.nav-pill-btn:not(.active):hover {
-  background: rgba(28, 40, 65, 0.85);
   color: #FFFFFF;
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+.nav-pill-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: #D4F038;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px rgba(212, 240, 56, 0.7);
 }
 
 /* Securities Terminal Sliding Carousel */

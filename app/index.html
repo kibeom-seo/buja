@@ -51,7 +51,7 @@
   </script>
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css">
-  <link rel="stylesheet" href="./css/style.css?v=2.8.0_makro_clean">
+  <link rel="stylesheet" href="./css/style.css?v=2.9.0_minimal_nav">
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950">
 
@@ -190,41 +190,34 @@
         </div>
       </div>
 
-      <!-- Sleek Segmented Button Navigation (1-Line Compact Layout) -->
-      <nav class="flex items-center overflow-x-auto max-w-full no-scrollbar gap-1.5 bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/90 text-xs">
-        <button onclick="switchTab('overview')" id="nav-overview" class="nav-pill-btn active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-          <span>종합 관제탑</span>
+      <!-- Sleek Minimalist Text Navigation (Exact Reference Image Style) -->
+      <nav class="flex items-center overflow-x-auto max-w-full no-scrollbar gap-1 sm:gap-2">
+        <button onclick="switchTab('overview')" id="nav-overview" class="nav-pill-btn active whitespace-nowrap">
+          Overview
         </button>
 
-        <button onclick="switchTab('plan1')" id="nav-plan1" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>1. 절세/월배당</span>
+        <button onclick="switchTab('plan1')" id="nav-plan1" class="nav-pill-btn whitespace-nowrap">
+          Dividends
         </button>
 
-        <button onclick="switchTab('plan2')" id="nav-plan2" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          <span>2. 5분 무한매수</span>
+        <button onclick="switchTab('plan2')" id="nav-plan2" class="nav-pill-btn whitespace-nowrap">
+          Infinite Buy
         </button>
 
-        <button onclick="switchTab('plan3')" id="nav-plan3" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-          <span>3. RWA/NFT</span>
+        <button onclick="switchTab('plan3')" id="nav-plan3" class="nav-pill-btn whitespace-nowrap">
+          Web3 & RWA
         </button>
 
-        <button onclick="switchTab('plan4')" id="nav-plan4" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-          <span>4. 꼬마빌딩</span>
+        <button onclick="switchTab('plan4')" id="nav-plan4" class="nav-pill-btn whitespace-nowrap">
+          Real Estate
         </button>
 
-        <button onclick="switchTab('news')" id="nav-news" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <i data-lucide="newspaper" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span>경제 뉴스</span>
+        <button onclick="switchTab('news')" id="nav-news" class="nav-pill-btn whitespace-nowrap">
+          News
         </button>
 
-        <button onclick="switchTab('vault')" id="nav-vault" class="nav-pill-btn px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap">
-          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-          <span>지식 뷰어</span>
+        <button onclick="switchTab('vault')" id="nav-vault" class="nav-pill-btn whitespace-nowrap">
+          Vault
         </button>
       </nav>
 
@@ -2041,13 +2034,13 @@
   <!-- ========================================== -->
   <!-- 8. MODULAR SCRIPT ARCHITECTURE -->
   <!-- ========================================== -->
-  <script src="./js/ticker.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/state.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/api.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/calculators.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/ui.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/news.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/vault.js?v=2.8.0_makro_clean"></script>
-  <script src="./js/main.js?v=2.8.0_makro_clean"></script>
+  <script src="./js/ticker.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/state.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/api.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/calculators.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/ui.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/news.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/vault.js?v=2.9.0_minimal_nav"></script>
+  <script src="./js/main.js?v=2.9.0_minimal_nav"></script>
 </body>
 </html>
