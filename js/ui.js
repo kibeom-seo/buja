@@ -14,6 +14,15 @@ function switchTab(tabId) {
     }
   });
 
+  const stratBtn = document.getElementById('nav-strategies-btn');
+  if (stratBtn) {
+    if (['plan1', 'plan2', 'plan3', 'plan4'].includes(tabId)) {
+      stratBtn.classList.add('active');
+    } else {
+      stratBtn.classList.remove('active');
+    }
+  }
+
   if (tabId === 'plan1') {
     setTimeout(() => {
       if (typeof calcMonthlyDividend === 'function') calcMonthlyDividend();
